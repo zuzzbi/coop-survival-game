@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net;
 
 namespace CoopSurvivalGame
 {
@@ -23,6 +24,22 @@ namespace CoopSurvivalGame
         public MainWindow()
         {
             InitializeComponent();
+            
+            
+            
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Game game = new Game(true);
+            game.Show();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+            Game game2 = new Game(false, "localhost");
+            game2.Show();
         }
     }
 }
