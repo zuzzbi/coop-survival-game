@@ -10,7 +10,7 @@
         <Canvas Focusable="True" Name="canvas" KeyDown="onkeydown">
             <Rectangle Focusable="True" Name="player1" KeyDown="onkeydown" Fill="#FFF4F4F5" Height="41" Stroke="Black" Width="42"/>
             <Rectangle Focusable="True" Name="player2" KeyDown="onkeydown" Fill="#FFF4F4F5" Height="41" Stroke="Black" Width="42"/>
+            
         </Canvas>
-
     </Grid>
 </Window>

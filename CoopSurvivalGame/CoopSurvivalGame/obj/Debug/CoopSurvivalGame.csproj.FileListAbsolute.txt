@@ -1,7 +1,6 @@
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.exe.config
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.exe
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.pdb
-C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csprojAssemblyReference.cache
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\Game.g.cs
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\MainWindow.g.cs
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\App.g.cs
@@ -15,3 +14,4 @@ C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvival
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csproj.CoreCompileInputs.cache
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.exe
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.pdb
+C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csprojAssemblyReference.cache

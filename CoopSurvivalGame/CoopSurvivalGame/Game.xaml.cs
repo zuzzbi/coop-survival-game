@@ -35,7 +35,7 @@ namespace CoopSurvivalGame
                 Canvas.SetTop(player1, 1);
                 Canvas.SetLeft(player2, 1);
                 Canvas.SetTop(player2, 100);
-                server = new TcpListener(System.Net.IPAddress.Any, 5000);
+                server = new TcpListener(IPAddress.Any, 5000);
                 server.Start();
                 sock = server.AcceptSocket();
             }
@@ -55,6 +55,11 @@ namespace CoopSurvivalGame
         private TcpClient client;
         bool isHost;
 
+        private void Listen()
+        {
+            
+        }
+
         private void onkeydown(object sender, KeyEventArgs e)
         {
             if (isHost)
@@ -62,7 +67,22 @@ namespace CoopSurvivalGame
                 if (e.Key == Key.A)
                 {
                     Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
-                    sock.send
+                    try
+                    {
+                        byte[] buffer = new byte[1];
+                        sock.Receive(buffer);
+                        if (buffer[0] == 1)
+                        {
+                            Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
+                        }
+                        if (buffer[0] == 2)
+                        {
+                            Canvas.SetLeft(player2, Canvas.GetLeft(player2) + 5);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                    }
                 }
                 if (e.Key == Key.D)
                 {
@@ -82,10 +102,14 @@ namespace CoopSurvivalGame
                 if (e.Key == Key.A)
                 {
                     Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
+                    byte[] buffer = { 1 };
+                    sock.Send(buffer);
                 }
                 if (e.Key == Key.D)
                 {
                     Canvas.SetLeft(player2, Canvas.GetLeft(player2) + 5);
+                    byte[] buffer = { 2 };
+                    sock.Send(buffer);
                 }
                 if (e.Key == Key.W)
                 {
