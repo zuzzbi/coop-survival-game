@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\
+C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\
 CoopSurvivalGame
 none
 false
 DEBUG;TRACE
-C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\App.xaml
-2-487028597
+C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\App.xaml
+4971571093
 
-7509535325
-13-1505183044
-Game.xaml;MainWindow.xaml;
+9-2062362985
+13-1310406943
+Game.xaml;MainWindow.xaml;UDPClient.xaml;UDPServer.xaml;
 
 True
 

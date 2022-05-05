@@ -31,15 +31,17 @@ namespace CoopSurvivalGame
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Game game = new Game(true);
-            game.Show();
+            UDPServer server = new UDPServer();
+            server.Show();
+            server.Server("127.0.0.1", 27000);
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
-            Game game2 = new Game(false, "localhost");
-            game2.Show();
+            UDPClient client= new UDPClient();
+            client.Show();
+            client.Client("127.0.0.1", 27000);
         }
     }
 }
