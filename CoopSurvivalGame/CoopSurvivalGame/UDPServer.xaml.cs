@@ -95,7 +95,7 @@ namespace CoopSurvivalGame
             switch (e.Key)
             {
                 case Key.A:
-                    Canvas.SetTop(player1, Canvas.GetLeft(player1) - 5);
+                    Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
                     Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.W:
@@ -107,7 +107,7 @@ namespace CoopSurvivalGame
                     Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.D:
-                    Canvas.SetTop(player1, Canvas.GetLeft(player1) + 5);
+                    Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
                     Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
 

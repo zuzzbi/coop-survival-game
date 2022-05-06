@@ -37,3 +37,7 @@ C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\Coop
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPServer.g.cs
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPClient.baml
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPServer.baml
+C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPClient.g.cs
+C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPServer.g.cs
+C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPClient.baml
+C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\UDPServer.baml
