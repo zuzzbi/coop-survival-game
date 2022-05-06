@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="UDPClient" Height="450" Width="800">
     <Grid>
-        <Button x:Name="sendTest" Content="Wyślij test" HorizontalAlignment="Left" Margin="375,217,0,0" VerticalAlignment="Top" Click="sendTest_Click"/>
-
+        <Canvas Name="canvas" Focusable="True" Margin="23,156,254,61" KeyDown="OnKeyDown">
+            <Rectangle Name="player2" Height="100" Canvas.Left="140" Stroke="Black" Canvas.Top="59" Width="100"/>
+            <Rectangle Name="player1" Height="100" Canvas.Left="343" Stroke="Black" Canvas.Top="109" Width="100"/>
+        </Canvas>
     </Grid>
 </Window>

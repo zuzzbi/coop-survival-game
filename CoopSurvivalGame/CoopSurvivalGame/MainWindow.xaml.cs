@@ -33,7 +33,7 @@ namespace CoopSurvivalGame
         {
             UDPServer server = new UDPServer();
             server.Show();
-            server.Server("127.0.0.1", 27000);
+            server.Server("127.0.0.1", 27000, 50000);
 
         }
 
@@ -41,7 +41,7 @@ namespace CoopSurvivalGame
         {
             UDPClient client= new UDPClient();
             client.Show();
-            client.Client("127.0.0.1", 27000);
+            client.Client("127.0.0.1", 50000, 27000);
         }
     }
 }

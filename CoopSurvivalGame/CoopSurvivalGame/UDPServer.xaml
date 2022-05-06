@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         Title="UDPServer" Height="450" Width="800">
     <Grid>
-        <TextBox x:Name="receivedText" HorizontalAlignment="Left" Margin="400,217,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Canvas Name="canvas" Focusable="True" Margin="23,156,254,61" KeyDown="OnKeyDown">
+                <Rectangle Name="player2" Height="100" Canvas.Left="140" Stroke="Black" Canvas.Top="59" Width="100"/>
+                <Rectangle Name="player1" Height="100" Canvas.Left="343" Stroke="Black" Canvas.Top="109" Width="100"/>
+            </Canvas>
 
-    </Grid>
+        </Grid>
 </Window>
