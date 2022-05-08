@@ -98,16 +98,16 @@ namespace CoopSurvivalGame
             switch (e.Key)
             {
                 case Key.A:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2)-5).ToString());
+                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) - 5).ToString());
                     break;
                 case Key.W:
-                    Send("player2," + (Canvas.GetTop(player2)-5).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                    Send("player2," + (Canvas.GetTop(player2) - 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
                     break;
                 case Key.S:
-                    Send("player2," + (Canvas.GetTop(player2)+5).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                    Send("player2," + (Canvas.GetTop(player2) + 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
                     break;
                 case Key.D:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2)+5).ToString());
+                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) + 5).ToString());
                     break;
 
                 default:
