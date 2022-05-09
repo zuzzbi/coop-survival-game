@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
 using System.Drawing;
+using Rectangle = System.Windows.Shapes.Rectangle;
+using System.Windows.Threading;
 
 namespace CoopSurvivalGame
 {
@@ -34,6 +36,8 @@ namespace CoopSurvivalGame
         private State state = new State();
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         private AsyncCallback recv = null;
+        List<Rectangle> shotsToRemove = new List<Rectangle>();
+
 
         public class State
         {
@@ -77,20 +81,42 @@ namespace CoopSurvivalGame
 
         private void ChangePosition(string position)
         {
-            string playerName = position.Split(',')[0];
+            string elementType = position.Split(',')[0];
             int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
             int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
-
-            if(playerName == "player1")
+            
+            if(elementType == "player1")
             {
                 Canvas.SetLeft(player1, positionFromLeft);
                 Canvas.SetTop(player1, positionFromTop);
-            } else
+            } else if (elementType == "player2")
             {
                 Canvas.SetLeft(player2, positionFromLeft);
                 Canvas.SetTop(player2, positionFromTop);
             }
-
+            else if (elementType == "shot")
+            {
+                //string elementName = position.Split(',')[3];
+                //try
+                //{
+                //    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
+                //    Canvas.SetTop(shot, positionFromTop);
+                //    Canvas.SetLeft(shot, positionFromLeft);
+                //}
+                //catch (Exception)
+                //{
+                    Rectangle shot = new Rectangle();
+                    //shot.Name = elementName;
+                    shot.Width = 5;
+                    shot.Height = 5;
+                    shot.Tag = "shot";
+                    shot.Fill = System.Windows.Media.Brushes.Cyan;
+                    Canvas.SetTop(shot, positionFromTop);
+                    Canvas.SetLeft(shot, positionFromLeft);
+                    canvas.Children.Add(shot);
+                //}
+                
+            }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

@@ -34,7 +34,7 @@ namespace CoopSurvivalGame
             UDPServer server = new UDPServer();
             server.Show();
             server.Server("127.0.0.1", 27000, 50000);
-
+            buttonHost.IsEnabled = false;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -42,6 +42,7 @@ namespace CoopSurvivalGame
             UDPClient client= new UDPClient();
             client.Show();
             client.Client("127.0.0.1", 50000, 27000);
+            buttonJoin.IsEnabled = false;
         }
     }
 }

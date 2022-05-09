@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CoopSurvivalGame"
         mc:Ignorable="d"
-        Title="UDPClient" Height="450" Width="800">
+        Title="UDPClient" Height="450" Width="450" MinHeight="450" MinWidth="450" MaxHeight="450" MaxWidth="450">
     <Grid>
-        <Canvas Name="canvas" Focusable="True" Margin="23,156,254,61" KeyDown="OnKeyDown">
-            <Rectangle Name="player2" Height="100" Canvas.Left="140" Stroke="Black" Canvas.Top="59" Width="100"/>
-            <Rectangle Name="player1" Height="100" Canvas.Left="343" Stroke="Black" Canvas.Top="109" Width="100"/>
+        <Canvas Name="canvas" Focusable="True" Margin="0,0,0,0" KeyDown="OnKeyDown">
+            <Rectangle Name="player2" Height="50" Canvas.Left="150" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF3960AD"/>
+            <Rectangle Name="player1" Height="50" Canvas.Left="250" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF592AA5"/>
         </Canvas>
     </Grid>
 </Window>

@@ -28,7 +28,7 @@ namespace CoopSurvivalGame
         {
             InitializeComponent();
             
-            gameTimer.Interval = TimeSpan.FromMilliseconds(30);
+            gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
             canvas.Focus();
@@ -41,7 +41,8 @@ namespace CoopSurvivalGame
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         private AsyncCallback recv = null;
         DispatcherTimer gameTimer = new DispatcherTimer();
-        List<Rectangle> itemsToRemove = new List<Rectangle>();
+        List<Rectangle> shotsActive = new List<Rectangle>();
+        List<Rectangle> shotsToRemove = new List<Rectangle>();
 
         public class State
         {
@@ -103,7 +104,8 @@ namespace CoopSurvivalGame
             Rectangle shot = new Rectangle();
             shot.Width = 5;
             shot.Height = 5;
-            shot.Fill = System.Windows.Media.Brushes.Red;
+            shot.Fill = System.Windows.Media.Brushes.Cyan;
+            //shot.Name = "s"+DateTime.Now.ToString("hh.mm.ss.ffffff").Replace('.','_');
             switch (key)
             {
                 case Key.Up:
@@ -130,6 +132,7 @@ namespace CoopSurvivalGame
                     break;
             }
             canvas.Children.Add(shot);
+            shotsActive.Add(shot);
         }
 
         private void GameLoop(object sender, EventArgs e)
@@ -141,7 +144,7 @@ namespace CoopSurvivalGame
                     Canvas.SetTop(item, Canvas.GetTop(item) - 7);
                     if (Canvas.GetTop(item) < -5)
                     {
-                        itemsToRemove.Add(item);
+                        shotsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotDown")
@@ -149,7 +152,7 @@ namespace CoopSurvivalGame
                     Canvas.SetTop(item, Canvas.GetTop(item) + 7);
                     if (Canvas.GetTop(item) > canvas.ActualHeight + 5)
                     {
-                        itemsToRemove.Add(item);
+                        shotsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotRight")
@@ -157,7 +160,7 @@ namespace CoopSurvivalGame
                     Canvas.SetLeft(item, Canvas.GetLeft(item) + 7);
                     if (Canvas.GetLeft(item) > canvas.ActualWidth + 5)
                     {
-                        itemsToRemove.Add(item);
+                        shotsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotLeft")
@@ -165,18 +168,25 @@ namespace CoopSurvivalGame
                     Canvas.SetLeft(item, Canvas.GetLeft(item) - 7);
                     if (Canvas.GetLeft(item) < -5)
                     {
-                        itemsToRemove.Add(item);
+                        shotsToRemove.Add(item);
                     }
                 }
             }
 
-            foreach (Rectangle i in itemsToRemove)
+            foreach (Rectangle item in shotsToRemove)
             {
-                canvas.Children.Remove(i);
+                canvas.Children.Remove(item);
+                shotsActive.Remove(item);
             }
 
-            //Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
             Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
+            foreach (var item in shotsActive)
+            {
+                //Send("shot," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString() + "," + item.Name);
+                Send("shot," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
+
+            }
+
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
