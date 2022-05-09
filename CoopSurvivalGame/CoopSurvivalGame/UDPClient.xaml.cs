@@ -96,17 +96,17 @@ namespace CoopSurvivalGame
             }
             else if (elementType == "shot")
             {
-                //string elementName = position.Split(',')[3];
-                //try
-                //{
-                //    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
-                //    Canvas.SetTop(shot, positionFromTop);
-                //    Canvas.SetLeft(shot, positionFromLeft);
-                //}
-                //catch (Exception)
-                //{
+                string elementName = position.Split(',')[3];
+                try
+                {
+                    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
+                    Canvas.SetTop(shot, positionFromTop);
+                    Canvas.SetLeft(shot, positionFromLeft);
+                }
+                catch (Exception)
+                {
                     Rectangle shot = new Rectangle();
-                    //shot.Name = elementName;
+                    shot.Name = elementName;
                     shot.Width = 5;
                     shot.Height = 5;
                     shot.Tag = "shot";
@@ -114,8 +114,8 @@ namespace CoopSurvivalGame
                     Canvas.SetTop(shot, positionFromTop);
                     Canvas.SetLeft(shot, positionFromLeft);
                     canvas.Children.Add(shot);
-                //}
-                
+                }
+
             }
         }
 
