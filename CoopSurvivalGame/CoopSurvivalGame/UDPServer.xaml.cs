@@ -115,7 +115,7 @@ namespace CoopSurvivalGame
             shot.Width = 5;
             shot.Height = 5;
             shot.Fill = System.Windows.Media.Brushes.Cyan;
-            shot.Name = "s"+shotCounterServer.ToString();
+            shot.Name = "shot"+shotCounterServer.ToString();
             shotCounterServer++;
             switch (key)
             {
@@ -186,9 +186,11 @@ namespace CoopSurvivalGame
 
             foreach (Rectangle item in shotsToRemove)
             {
-                canvas.Children.Remove(item);
+                Send(item.Name + ",-1,-1");
                 shotsActive.Remove(item);
+                canvas.Children.Remove(item);
             }
+            shotsToRemove = new List<Rectangle>();
 
             if (keyA) 
             {
@@ -229,11 +231,9 @@ namespace CoopSurvivalGame
             Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
             foreach (var item in shotsActive)
             {
-                Send("shot," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString() + "," + item.Name);
+                Send(item.Name + "," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
                 //Send("shot," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
-
             }
-
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -246,7 +246,7 @@ namespace CoopSurvivalGame
                     //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.W:
-                    keyW=true;
+                    keyW = true;
                     //Canvas.SetTop(player1, Canvas.GetTop(player1) - 5);
                     //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
@@ -262,12 +262,12 @@ namespace CoopSurvivalGame
                     break;
                 case Key.Up:
                     if (!e.IsRepeat)
-                        keyUp =true;
+                        keyUp = true;
                     //CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
                     break;
                 case Key.Down:
                     if (!e.IsRepeat)
-                        keyDown =true;
+                        keyDown = true;
                     //CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
                     break;
                 case Key.Right:

@@ -81,42 +81,54 @@ namespace CoopSurvivalGame
 
         private void ChangePosition(string position)
         {
-            string elementType = position.Split(',')[0];
-            int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
-            int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
-            
-            if(elementType == "player1")
+            try
             {
-                Canvas.SetLeft(player1, positionFromLeft);
-                Canvas.SetTop(player1, positionFromTop);
-            } else if (elementType == "player2")
-            {
-                Canvas.SetLeft(player2, positionFromLeft);
-                Canvas.SetTop(player2, positionFromTop);
-            }
-            else if (elementType == "shot")
-            {
-                string elementName = position.Split(',')[3];
-                try
-                {
-                    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
-                    Canvas.SetTop(shot, positionFromTop);
-                    Canvas.SetLeft(shot, positionFromLeft);
-                }
-                catch (Exception)
-                {
-                    Rectangle shot = new Rectangle();
-                    shot.Name = elementName;
-                    shot.Width = 5;
-                    shot.Height = 5;
-                    shot.Tag = "shot";
-                    shot.Fill = System.Windows.Media.Brushes.Cyan;
-                    Canvas.SetTop(shot, positionFromTop);
-                    Canvas.SetLeft(shot, positionFromLeft);
-                    canvas.Children.Add(shot);
-                }
+                string elementType = position.Split(',')[0];
+                int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
+                int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
 
+                if (elementType == "player1")
+                {
+                    Canvas.SetLeft(player1, positionFromLeft);
+                    Canvas.SetTop(player1, positionFromTop);
+                }
+                else if (elementType == "player2")
+                {
+                    Canvas.SetLeft(player2, positionFromLeft);
+                    Canvas.SetTop(player2, positionFromTop);
+                }
+                else if (positionFromLeft == -1 && positionFromTop == -1)
+                {
+                    try
+                    {
+                        var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                        canvas.Children.Remove(shot);
+                    }
+                    catch (Exception) { }
+                }
+                else if (elementType.Contains("shot"))
+                {
+                    try
+                    {
+                        var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                        Canvas.SetTop(shot, positionFromTop);
+                        Canvas.SetLeft(shot, positionFromLeft);
+                    }
+                    catch (Exception)
+                    {
+                        Rectangle shot = new Rectangle();
+                        shot.Name = elementType;
+                        shot.Width = 5;
+                        shot.Height = 5;
+                        shot.Tag = "shot";
+                        shot.Fill = System.Windows.Media.Brushes.Cyan;
+                        Canvas.SetTop(shot, positionFromTop);
+                        Canvas.SetLeft(shot, positionFromLeft);
+                        canvas.Children.Add(shot);
+                    }
+                }
             }
+            catch(Exception) { }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
