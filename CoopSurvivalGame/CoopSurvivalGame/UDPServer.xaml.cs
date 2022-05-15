@@ -31,6 +31,9 @@ namespace CoopSurvivalGame
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
+            //enemyTimer.Interval = TimeSpan.FromMilliseconds(10000);
+            //enemyTimer.Tick += EnemyLoop;
+            //enemyTimer.Start();
             canvas.Focus();
         }
 
@@ -41,17 +44,16 @@ namespace CoopSurvivalGame
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         private AsyncCallback recv = null;
         DispatcherTimer gameTimer = new DispatcherTimer();
+        //DispatcherTimer enemyTimer = new DispatcherTimer();
         List<Rectangle> shotsActive = new List<Rectangle>();
-        List<Rectangle> shotsToRemove = new List<Rectangle>();
+        List<Rectangle> itemsToRemove = new List<Rectangle>();
+        List<Rectangle> enemyActive = new List<Rectangle>();
         bool keyA = false;
         bool keyW = false;
         bool keyS = false;
         bool keyD = false;
-        bool keyUp = false;
-        bool keyDown = false;
-        bool keyLeft = false;
-        bool keyRight = false;
         int shotCounterServer = 0;
+        int enemyCounterServer = 0;
 
         public class State
         {
@@ -64,8 +66,6 @@ namespace CoopSurvivalGame
             _socketForReceive.Bind(new IPEndPoint(IPAddress.Parse(address), portForReceive));
 
             _socketForSend.Connect(IPAddress.Parse(address), portForSend);
-
-
 
             Receive();
         }
@@ -99,14 +99,33 @@ namespace CoopSurvivalGame
 
         private void ChangePosition(string position)
         {
-            string playerName = position.Split(',')[0];
+            string elemntType = position.Split(',')[0];
             int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
             int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
 
-            Canvas.SetLeft(player2, positionFromLeft);
-            Canvas.SetTop(player2, positionFromTop);
+            if (elemntType == "player2")
+            {
+                Canvas.SetLeft(player2, positionFromLeft);
+                Canvas.SetTop(player2, positionFromTop);
 
-            Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+            }
+            else if (elemntType == "shotUp")
+            {
+                CreateShot(Key.Up, positionFromTop, positionFromLeft);
+            }
+            else if (elemntType == "shotDown")
+            {
+                CreateShot(Key.Down, positionFromTop, positionFromLeft);
+            }
+            else if (elemntType == "shotLeft")
+            {
+                CreateShot(Key.Left, positionFromTop, positionFromLeft);
+            }
+            else if (elemntType == "shotRight")
+            {
+                CreateShot(Key.Right, positionFromTop, positionFromLeft);
+            }
         }
 
         private void CreateShot(Key key, int positionTop, int positionLeft)
@@ -115,7 +134,7 @@ namespace CoopSurvivalGame
             shot.Width = 5;
             shot.Height = 5;
             shot.Fill = System.Windows.Media.Brushes.Cyan;
-            shot.Name = "shot"+shotCounterServer.ToString();
+            shot.Name = "shot" + shotCounterServer.ToString();
             shotCounterServer++;
             switch (key)
             {
@@ -144,6 +163,23 @@ namespace CoopSurvivalGame
             }
             canvas.Children.Add(shot);
             shotsActive.Add(shot);
+            Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
+        }
+
+        private void CreateEnemy()
+        {
+            Rectangle enemy = new Rectangle();
+            enemy.Width = 60;
+            enemy.Height = 60;
+            enemy.Fill = System.Windows.Media.Brushes.Red;
+            enemy.Name = "enemy" + enemyCounterServer.ToString();
+            enemyCounterServer++;
+            Random random = new Random();
+            Canvas.SetTop(enemy, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - 60));
+            Canvas.SetLeft(enemy, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - 60));
+            canvas.Children.Add(enemy);
+            enemyActive.Add(enemy);
+            Send(enemy.Name + "," + Canvas.GetTop(enemy).ToString() + "," + Canvas.GetLeft(enemy).ToString());
         }
 
         private void GameLoop(object sender, EventArgs e)
@@ -155,7 +191,7 @@ namespace CoopSurvivalGame
                     Canvas.SetTop(item, Canvas.GetTop(item) - 7);
                     if (Canvas.GetTop(item) < -5)
                     {
-                        shotsToRemove.Add(item);
+                        itemsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotDown")
@@ -163,7 +199,7 @@ namespace CoopSurvivalGame
                     Canvas.SetTop(item, Canvas.GetTop(item) + 7);
                     if (Canvas.GetTop(item) > canvas.ActualHeight + 5)
                     {
-                        shotsToRemove.Add(item);
+                        itemsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotRight")
@@ -171,7 +207,7 @@ namespace CoopSurvivalGame
                     Canvas.SetLeft(item, Canvas.GetLeft(item) + 7);
                     if (Canvas.GetLeft(item) > canvas.ActualWidth + 5)
                     {
-                        shotsToRemove.Add(item);
+                        itemsToRemove.Add(item);
                     }
                 }
                 if (item is Rectangle && (string)item.Tag == "shotLeft")
@@ -179,20 +215,33 @@ namespace CoopSurvivalGame
                     Canvas.SetLeft(item, Canvas.GetLeft(item) - 7);
                     if (Canvas.GetLeft(item) < -5)
                     {
-                        shotsToRemove.Add(item);
+                        itemsToRemove.Add(item);
+                    }
+                }
+            }
+            foreach (Rectangle shot in shotsActive)
+            {
+                foreach (var enemy in enemyActive)
+                {
+                    if (Overlap(enemy, shot))
+                    {
+                        itemsToRemove.Add(shot);
+                        itemsToRemove.Add(enemy);
+                        break;
                     }
                 }
             }
 
-            foreach (Rectangle item in shotsToRemove)
+            foreach (Rectangle item in itemsToRemove)
             {
                 Send(item.Name + ",-1,-1");
                 shotsActive.Remove(item);
                 canvas.Children.Remove(item);
             }
-            shotsToRemove = new List<Rectangle>();
+            
+            itemsToRemove = new List<Rectangle>();                
 
-            if (keyA) 
+            if (keyA)
             {
                 Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
             }
@@ -208,77 +257,61 @@ namespace CoopSurvivalGame
             {
                 Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
             }
-            if (keyUp)
-            {
-                CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
-                keyUp = false;
-            }
-            if (keyDown)
-            {
-                CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
-                keyDown = false;
-            }
-            if (keyRight)
-            {
-                CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width));
-                keyRight = false;
-            }
-            if (keyLeft)
-            {
-                CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)));
-                keyLeft = false;
-            }
             Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
-            foreach (var item in shotsActive)
+            foreach (var shot in shotsActive)
             {
-                Send(item.Name + "," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
-                //Send("shot," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
+                Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
             }
+        }
+    
+
+        private bool Overlap(Rectangle r1, Rectangle r2)
+        {
+            if (Canvas.GetLeft(r1) < Canvas.GetLeft(r2)+r2.ActualWidth && Canvas.GetLeft(r1)+r1.ActualWidth > Canvas.GetLeft(r2) && Canvas.GetTop(r1) < Canvas.GetTop(r2)+r2.ActualHeight && Canvas.GetTop(r1)+r1.ActualHeight > Canvas.GetTop(r2))
+            {
+                return true;
+            }
+            return false;
+        }
+        private void EnemyLoop(object sender, EventArgs e)
+        {
+            CreateEnemy();
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
+                case Key.Space:
+                    CreateEnemy();
+                    break;
                 case Key.A:
                     keyA = true;
-                    //Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.W:
                     keyW = true;
-                    //Canvas.SetTop(player1, Canvas.GetTop(player1) - 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.S:
                     keyS = true;
-                    //Canvas.SetTop(player1, Canvas.GetTop(player1) + 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.D:
                     keyD = true;
-                    //Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.Up:
                     if (!e.IsRepeat)
-                        keyUp = true;
-                    //CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
+                        CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
                     break;
                 case Key.Down:
                     if (!e.IsRepeat)
-                        keyDown = true;
-                    //CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
+                        CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
                     break;
                 case Key.Right:
                     if (!e.IsRepeat)
-                        keyRight = true;
-                    //CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width));
+                        CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width));
                     break;
                 case Key.Left:
                     if (!e.IsRepeat)
-                        keyLeft = true;
-                    //CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)));
+                        CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)));
                     break;
                 default:
 
@@ -292,39 +325,15 @@ namespace CoopSurvivalGame
             {
                 case Key.A:
                     keyA = false;
-                    //Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.W:
                     keyW = false;
-                    //Canvas.SetTop(player1, Canvas.GetTop(player1) - 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.S:
                     keyS = false;
-                    //Canvas.SetTop(player1, Canvas.GetTop(player1) + 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
                     break;
                 case Key.D:
                     keyD = false;
-                    //Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
-                    //Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
-                    break;
-                case Key.Up:
-                    keyUp = false;
-                    //CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
-                    break;
-                case Key.Down:
-                    keyDown = false;
-                    //CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
-                    break;
-                case Key.Right:
-                    keyRight = false;
-                    //CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width));
-                    break;
-                case Key.Left:
-                    keyLeft = false;
-                    //CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)));
                     break;
                 default:
 

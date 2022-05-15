@@ -27,6 +27,9 @@ namespace CoopSurvivalGame
         public UDPClient()
         {
             InitializeComponent();
+            gameTimer.Interval = TimeSpan.FromMilliseconds(20);
+            gameTimer.Tick += GameLoop;
+            gameTimer.Start();
             canvas.Focus();
         }
 
@@ -35,9 +38,13 @@ namespace CoopSurvivalGame
         private const int bufSize = 8 * 1024;
         private State state = new State();
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
+        DispatcherTimer gameTimer = new DispatcherTimer();
         private AsyncCallback recv = null;
         List<Rectangle> shotsToRemove = new List<Rectangle>();
-
+        bool keyA = false;
+        bool keyW = false;
+        bool keyS = false;
+        bool keyD = false;
 
         public class State
         {
@@ -63,7 +70,8 @@ namespace CoopSurvivalGame
                 _socketForReceive.BeginReceiveFrom(so.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv, so);
                 string rec = Encoding.ASCII.GetString(so.buffer, 0, bytes);
 
-                Dispatcher.Invoke(new Action(() => {
+                Dispatcher.Invoke(new Action(() =>
+                {
                     ChangePosition(rec);
                 }));
             }, state);
@@ -77,6 +85,27 @@ namespace CoopSurvivalGame
                 State so = (State)ar.AsyncState;
                 int bytes = _socketForSend.EndSend(ar);
             }, state);
+        }
+
+        public void GameLoop(object sender, EventArgs e)
+        {
+            if (keyA)
+            {
+                Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
+            }
+            if (keyW)
+            {
+                Canvas.SetTop(player2, Canvas.GetTop(player2) - 5);
+            }
+            if (keyS)
+            {
+                Canvas.SetTop(player2, Canvas.GetTop(player2) + 5);
+            }
+            if (keyD)
+            {
+                Canvas.SetLeft(player2, Canvas.GetLeft(player2) + 5);
+            }
+            Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
         }
 
         private void ChangePosition(string position)
@@ -127,8 +156,29 @@ namespace CoopSurvivalGame
                         canvas.Children.Add(shot);
                     }
                 }
+                else if (elementType.Contains("enemy"))
+                {
+                    try
+                    {
+                        var enemy = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                        Canvas.SetTop(enemy, positionFromTop);
+                        Canvas.SetLeft(enemy, positionFromLeft);
+                    }
+                    catch (Exception)
+                    {
+                        Rectangle enemy = new Rectangle();
+                        enemy.Name = elementType;
+                        enemy.Width = 60;
+                        enemy.Height = 60;
+                        enemy.Tag = "enemy";
+                        enemy.Fill = System.Windows.Media.Brushes.Red;
+                        Canvas.SetTop(enemy, positionFromTop);
+                        Canvas.SetLeft(enemy, positionFromLeft);
+                        canvas.Children.Add(enemy);
+                    }
+                }
             }
-            catch(Exception) { }
+            catch (Exception) { }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -136,18 +186,55 @@ namespace CoopSurvivalGame
             switch (e.Key)
             {
                 case Key.A:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) - 5).ToString());
+                    keyA = true;
                     break;
                 case Key.W:
-                    Send("player2," + (Canvas.GetTop(player2) - 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                    keyW = true;
                     break;
                 case Key.S:
-                    Send("player2," + (Canvas.GetTop(player2) + 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                    keyS = true;
                     break;
                 case Key.D:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) + 5).ToString());
+                    keyD = true;
                     break;
+                case Key.Up:
+                    if (!e.IsRepeat)
+                        Send("shotUp," + Convert.ToInt32(Canvas.GetTop(player2)).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
+                    break;
+                case Key.Down:
+                    if (!e.IsRepeat)
+                        Send("shotDown," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height).ToString().ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
+                    break;
+                case Key.Right:
+                    if (!e.IsRepeat)
+                        Send("shotRight," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height / 2).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width).ToString());
+                    break;
+                case Key.Left:
+                    if (!e.IsRepeat)
+                        Send("shotLeft," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height / 2).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2)).ToString());
+                    break;
+                default:
 
+                    break;
+            }
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.A:
+                    keyA = false;
+                    break;
+                case Key.W:
+                    keyW = false;
+                    break;
+                case Key.S:
+                    keyS = false;
+                    break;
+                case Key.D:
+                    keyD = false;
+                    break;
                 default:
 
                     break;
