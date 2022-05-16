@@ -16,6 +16,7 @@ using System.Net.Sockets;
 using System.Drawing;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace CoopSurvivalGame
 {
@@ -27,6 +28,9 @@ namespace CoopSurvivalGame
         public UDPClient()
         {
             InitializeComponent();
+            Score1.Text = "0";
+            Score2.Text = "0";
+            stopwatch.Start();
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
@@ -45,6 +49,8 @@ namespace CoopSurvivalGame
         bool keyW = false;
         bool keyS = false;
         bool keyD = false;
+        Stopwatch stopwatch = new Stopwatch();
+        int shotDelay = 500;
 
         public class State
         {
@@ -115,16 +121,21 @@ namespace CoopSurvivalGame
                 string elementType = position.Split(',')[0];
                 int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
                 int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
-
                 if (elementType == "player1")
                 {
-                    Canvas.SetLeft(player1, positionFromLeft);
-                    Canvas.SetTop(player1, positionFromTop);
+                    if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
+                    {
+                        Canvas.SetLeft(player1, positionFromLeft);
+                        Canvas.SetTop(player1, positionFromTop);
+                    }
                 }
                 else if (elementType == "player2")
                 {
-                    Canvas.SetLeft(player2, positionFromLeft);
-                    Canvas.SetTop(player2, positionFromTop);
+                    if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player2.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player2.Width)
+                    {
+                        Canvas.SetLeft(player2, positionFromLeft);
+                        Canvas.SetTop(player2, positionFromTop);
+                    }
                 }
                 else if (positionFromLeft == -1 && positionFromTop == -1)
                 {
@@ -168,14 +179,19 @@ namespace CoopSurvivalGame
                     {
                         Rectangle enemy = new Rectangle();
                         enemy.Name = elementType;
-                        enemy.Width = 60;
-                        enemy.Height = 60;
+                        enemy.Width = 40;
+                        enemy.Height = 40;
                         enemy.Tag = "enemy";
                         enemy.Fill = System.Windows.Media.Brushes.Red;
                         Canvas.SetTop(enemy, positionFromTop);
                         Canvas.SetLeft(enemy, positionFromLeft);
                         canvas.Children.Add(enemy);
                     }
+                }
+                else if (elementType == "score")
+                {
+                    Score1.Text = Convert.ToString(positionFromTop);
+                    Score2.Text = Convert.ToString(positionFromLeft);
                 }
             }
             catch (Exception) { }
@@ -198,20 +214,52 @@ namespace CoopSurvivalGame
                     keyD = true;
                     break;
                 case Key.Up:
-                    if (!e.IsRepeat)
+                    stopwatch.Stop();
+                    if (!e.IsRepeat && stopwatch.ElapsedMilliseconds >= shotDelay)
+                    {
                         Send("shotUp," + Convert.ToInt32(Canvas.GetTop(player2)).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
+                        stopwatch.Restart();
+                    }
+                    else
+                    {
+                        stopwatch.Start();
+                    }
                     break;
                 case Key.Down:
-                    if (!e.IsRepeat)
+                    stopwatch.Stop();
+                    if (!e.IsRepeat && stopwatch.ElapsedMilliseconds >= shotDelay)
+                    {
                         Send("shotDown," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height).ToString().ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
+                        stopwatch.Restart();
+                    }
+                    else
+                    {
+                        stopwatch.Start();
+                    }
                     break;
                 case Key.Right:
-                    if (!e.IsRepeat)
+                    stopwatch.Stop();
+                    if (!e.IsRepeat && stopwatch.ElapsedMilliseconds >= shotDelay)
+                    {
                         Send("shotRight," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height / 2).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width).ToString());
+                        stopwatch.Restart();
+                    }
+                    else
+                    {
+                        stopwatch.Start();
+                    }
                     break;
                 case Key.Left:
-                    if (!e.IsRepeat)
+                    stopwatch.Stop();
+                    if (!e.IsRepeat && stopwatch.ElapsedMilliseconds >= shotDelay)
+                    {
                         Send("shotLeft," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height / 2).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2)).ToString());
+                        stopwatch.Restart();
+                    }
+                    else
+                    {
+                        stopwatch.Start();
+                    }
                     break;
                 default:
 

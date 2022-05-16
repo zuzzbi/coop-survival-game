@@ -16,6 +16,7 @@ using System.Net.Sockets;
 using System.Drawing;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace CoopSurvivalGame
 {
@@ -27,7 +28,10 @@ namespace CoopSurvivalGame
         public UDPServer()
         {
             InitializeComponent();
-
+            Score1.Text = Convert.ToString(playerPoints1);
+            Score2.Text = Convert.ToString(playerPoints2);
+            stopwatchShot.Start();
+            stopwatchEnemy.Start();
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
@@ -54,6 +58,11 @@ namespace CoopSurvivalGame
         bool keyD = false;
         int shotCounterServer = 0;
         int enemyCounterServer = 0;
+        Stopwatch stopwatchShot = new Stopwatch();
+        Stopwatch stopwatchEnemy = new Stopwatch();
+        int shotDelay = 500;
+        int playerPoints1 = 0;
+        int playerPoints2 = 0;
 
         public class State
         {
@@ -105,36 +114,39 @@ namespace CoopSurvivalGame
 
             if (elemntType == "player2")
             {
-                Canvas.SetLeft(player2, positionFromLeft);
-                Canvas.SetTop(player2, positionFromTop);
+                if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
+                {
+                    Canvas.SetLeft(player2, positionFromLeft);
+                    Canvas.SetTop(player2, positionFromTop);
 
-                Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                }
             }
             else if (elemntType == "shotUp")
             {
-                CreateShot(Key.Up, positionFromTop, positionFromLeft);
+                CreateShot(Key.Up, positionFromTop, positionFromLeft, 'c');
             }
             else if (elemntType == "shotDown")
             {
-                CreateShot(Key.Down, positionFromTop, positionFromLeft);
+                CreateShot(Key.Down, positionFromTop, positionFromLeft, 'c');
             }
             else if (elemntType == "shotLeft")
             {
-                CreateShot(Key.Left, positionFromTop, positionFromLeft);
+                CreateShot(Key.Left, positionFromTop, positionFromLeft, 'c');
             }
             else if (elemntType == "shotRight")
             {
-                CreateShot(Key.Right, positionFromTop, positionFromLeft);
+                CreateShot(Key.Right, positionFromTop, positionFromLeft, 'c');
             }
         }
 
-        private void CreateShot(Key key, int positionTop, int positionLeft)
+        private void CreateShot(Key key, int positionTop, int positionLeft, char player)
         {
             Rectangle shot = new Rectangle();
             shot.Width = 5;
             shot.Height = 5;
             shot.Fill = System.Windows.Media.Brushes.Cyan;
-            shot.Name = "shot" + shotCounterServer.ToString();
+            shot.Name = "shot"+ player + shotCounterServer.ToString();
             shotCounterServer++;
             switch (key)
             {
@@ -169,14 +181,15 @@ namespace CoopSurvivalGame
         private void CreateEnemy()
         {
             Rectangle enemy = new Rectangle();
-            enemy.Width = 60;
-            enemy.Height = 60;
+            enemy.Width = 40;
+            enemy.Height = 40;
             enemy.Fill = System.Windows.Media.Brushes.Red;
             enemy.Name = "enemy" + enemyCounterServer.ToString();
+            enemy.Tag = "2";
             enemyCounterServer++;
             Random random = new Random();
-            Canvas.SetTop(enemy, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - 60));
-            Canvas.SetLeft(enemy, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - 60));
+            Canvas.SetTop(enemy, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - Convert.ToInt32(enemy.Height)));
+            Canvas.SetLeft(enemy, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(enemy.Width)));
             canvas.Children.Add(enemy);
             enemyActive.Add(enemy);
             Send(enemy.Name + "," + Canvas.GetTop(enemy).ToString() + "," + Canvas.GetLeft(enemy).ToString());
@@ -226,7 +239,25 @@ namespace CoopSurvivalGame
                     if (Overlap(enemy, shot))
                     {
                         itemsToRemove.Add(shot);
-                        itemsToRemove.Add(enemy);
+                        int lifeLeft = Convert.ToInt32(enemy.Tag) - 1;
+                        if (lifeLeft <= 0)
+                        {
+                            itemsToRemove.Add(enemy);
+                            if (shot.Name.Contains("shotc"))
+                            {
+                                playerPoints2++;
+                                Score2.Text = Convert.ToString(playerPoints2);
+                            }
+                            else
+                            {
+                                playerPoints1++;
+                                Score1.Text = Convert.ToString(playerPoints1);
+                            }
+                        }
+                        else
+                        {
+                            enemy.Tag = Convert.ToString(lifeLeft);
+                        }
                         break;
                     }
                 }
@@ -236,6 +267,7 @@ namespace CoopSurvivalGame
             {
                 Send(item.Name + ",-1,-1");
                 shotsActive.Remove(item);
+                enemyActive.Remove(item);
                 canvas.Children.Remove(item);
             }
             
@@ -243,24 +275,46 @@ namespace CoopSurvivalGame
 
             if (keyA)
             {
-                Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
+                if (Canvas.GetLeft(player1) - 5 > 0 && Canvas.GetLeft(player1) - 5 < canvas.ActualWidth - player1.Height)
+                {
+                    Canvas.SetLeft(player1, Canvas.GetLeft(player1) - 5);
+                }
             }
             if (keyW)
             {
-                Canvas.SetTop(player1, Canvas.GetTop(player1) - 5);
+                if (Canvas.GetTop(player1) - 5 > 0 && Canvas.GetTop(player1) - 5 < canvas.ActualHeight - player1.Height)
+                { 
+                    Canvas.SetTop(player1, Canvas.GetTop(player1) - 5); 
+                }
             }
             if (keyS)
             {
-                Canvas.SetTop(player1, Canvas.GetTop(player1) + 5);
+                if (Canvas.GetTop(player1) + 5 > 0 && Canvas.GetTop(player1) + 5 < canvas.ActualHeight - player1.Height)
+                {
+                    Canvas.SetTop(player1, Canvas.GetTop(player1) + 5);
+                }
             }
             if (keyD)
             {
-                Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
+                if (Canvas.GetLeft(player1) + 5 > 0 && Canvas.GetLeft(player1) + 5 < canvas.ActualWidth - player1.Height)
+                {
+                    Canvas.SetLeft(player1, Canvas.GetLeft(player1) + 5);
+                }
             }
             Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
             foreach (var shot in shotsActive)
             {
                 Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
+            }
+            stopwatchEnemy.Stop();
+            if (stopwatchEnemy.ElapsedMilliseconds > 3000 && enemyActive.Count <= 4)
+            {
+                CreateEnemy();
+                stopwatchEnemy.Restart();
+            }
+            else
+            {
+                stopwatchEnemy.Start();
             }
         }
     
@@ -282,9 +336,6 @@ namespace CoopSurvivalGame
         {
             switch (e.Key)
             {
-                case Key.Space:
-                    CreateEnemy();
-                    break;
                 case Key.A:
                     keyA = true;
                     break;
@@ -298,21 +349,53 @@ namespace CoopSurvivalGame
                     keyD = true;
                     break;
                 case Key.Up:
-                    if (!e.IsRepeat)
-                        CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
+                    stopwatchShot.Stop();
+                    if (!e.IsRepeat && stopwatchShot.ElapsedMilliseconds >= shotDelay)
+                    {                  
+                        CreateShot(Key.Up, Convert.ToInt32(Canvas.GetTop(player1)), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2), 's');
+                        stopwatchShot.Restart();
+                    }
+                    else
+                    {
+                        stopwatchShot.Start();
+                    }
                     break;
                 case Key.Down:
-                    if (!e.IsRepeat)
-                        CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2));
+                    stopwatchShot.Stop();
+                    if (!e.IsRepeat && stopwatchShot.ElapsedMilliseconds >= shotDelay)
+                    {
+                        CreateShot(Key.Down, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width / 2), 's');
+                        stopwatchShot.Restart();
+                    }
+                    else
+                    {
+                        stopwatchShot.Start();
+                    }
                     break;
                 case Key.Right:
-                    if (!e.IsRepeat)
-                        CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width));
+                    stopwatchShot.Stop();
+                    if (!e.IsRepeat && stopwatchShot.ElapsedMilliseconds >= shotDelay)
+                    {
+                        CreateShot(Key.Right, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1) + player1.Width), 's');
+                        stopwatchShot.Restart();
+                    }
+                    else
+                    {
+                        stopwatchShot.Start();
+                    }
                     break;
                 case Key.Left:
-                    if (!e.IsRepeat)
-                        CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)));
-                    break;
+                    stopwatchShot.Stop();
+                    if (!e.IsRepeat && stopwatchShot.ElapsedMilliseconds >= shotDelay)
+                    {
+                        CreateShot(Key.Left, Convert.ToInt32(Canvas.GetTop(player1) + player1.Height / 2), Convert.ToInt32(Canvas.GetLeft(player1)), 's');
+                        stopwatchShot.Restart();
+                    }
+                    else
+                    {
+                        stopwatchShot.Start();
+                    }
+            break;
                 default:
 
                     break;

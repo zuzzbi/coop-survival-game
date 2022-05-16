@@ -7,9 +7,13 @@
         mc:Ignorable="d"
         Title="UDPServer" Height="450" Width="450" MinHeight="450" MinWidth="450" MaxHeight="450" MaxWidth="450">
     <Grid>
-        <Canvas Name="canvas" Focusable="True" Margin="0,0,0,0" KeyDown="OnKeyDown" KeyUp="OnKeyUp">
-            <Rectangle Name="player2" Height="50" Canvas.Left="150" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF3960AD"/>
-            <Rectangle Name="player1" Height="50" Canvas.Left="250" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF592AA5"/>
+        <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="Player1" VerticalAlignment="Top" Width="200" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="250,0,0,0" TextWrapping="Wrap" Text="Player2" VerticalAlignment="Top" Width="200" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="0,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" x:Name="Score1" Width="200" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="250,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" x:Name="Score2" Width="200" TextAlignment="Center"/>
+        <Canvas Name="canvas" Focusable="True" Margin="0,50,0,0" KeyDown="OnKeyDown" KeyUp="OnKeyUp">
+            <Rectangle Name="player1" Height="50" Canvas.Left="150" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF3960AD"/>
+            <Rectangle Name="player2" Height="50" Canvas.Left="250" Stroke="Transparent" Canvas.Top="175" Width="50" Fill="#FF592AA5"/>
         </Canvas>
     </Grid>
 </Window>
