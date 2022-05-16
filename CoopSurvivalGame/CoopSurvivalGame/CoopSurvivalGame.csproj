@@ -56,16 +56,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controller.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="UDPClient.xaml.cs">
       <DependentUpon>UDPClient.xaml</DependentUpon>
     </Compile>
     <Compile Include="UDPServer.xaml.cs">
       <DependentUpon>UDPServer.xaml</DependentUpon>
     </Compile>
-    <Page Include="Game.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,9 +71,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Game.xaml.cs">
-      <DependentUpon>Game.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

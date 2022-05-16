@@ -17,7 +17,6 @@ C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvival
 C:\Users\zuzzb\Documents\GitHub\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csprojAssemblyReference.cache
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csproj.AssemblyReference.cache
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.csproj.SuggestedBindingRedirects.cache
-C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\Game.g.cs
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\MainWindow.g.cs
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\App.g.cs
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame_MarkupCompile.cache
@@ -27,7 +26,6 @@ C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\Coop
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.exe.config
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.exe
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\bin\Debug\CoopSurvivalGame.pdb
-C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\Game.baml
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\MainWindow.baml
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.g.resources
 C:\Users\Modec\Desktop\studia\Magisterka\Sem2\Rozproszon\coop-survival-game\CoopSurvivalGame\CoopSurvivalGame\obj\Debug\CoopSurvivalGame.Properties.Resources.resources

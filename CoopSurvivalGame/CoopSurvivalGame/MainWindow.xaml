@@ -7,10 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="250" MaxHeight="350" MaxWidth="250" MinHeight="350" MinWidth="250" Background="DimGray">
     <Grid>
-        <Label Content="Adrian Szymański" HorizontalAlignment="Left" Margin="45,10,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
-        <Label Content="Tomasz Bonisławski" HorizontalAlignment="Left" Margin="45,25,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
-        <Label Content="Zuzanna Żbikowska" HorizontalAlignment="Left" Margin="45,40,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
-        <Button Content="Host" Name="buttonHost" HorizontalAlignment="Left" Margin="65,100,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click" Height="73"/>
-        <Button Content="Join" Name="buttonJoin" HorizontalAlignment="Left" Margin="65,210,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.447,-0.464" Click="Button_Click_1" Height="69"/>
+        <Label Content="Adrian Szymański" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
+        <Label Content="Tomasz Bonisławski" HorizontalAlignment="Center" Margin="0,25,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
+        <Label Content="Zuzanna Żbikowska" HorizontalAlignment="Center" Margin="0,40,0,0" VerticalAlignment="Top" Width="160" Height="25" HorizontalContentAlignment="Center"/>
+        <Button Content="Host" Name="buttonHost" HorizontalAlignment="Center" Margin="0,112,0,0" VerticalAlignment="Top" Width="120" Click="joinHost" Height="73"/>
+        <Button Content="Join" Name="buttonJoin" HorizontalAlignment="Center" Margin="0,210,0,0" VerticalAlignment="Top" Width="120" Click="joinClient" Height="69" IsEnabled="False"/>
+        <TextBox x:Name="playerName" HorizontalAlignment="Center" Margin="0,70,0,0" TextWrapping="Wrap" Text="Player name" VerticalAlignment="Top" Width="120"/>
     </Grid>
 </Window>

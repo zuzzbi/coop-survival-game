@@ -21,28 +21,38 @@ namespace CoopSurvivalGame
     /// </summary>
     public partial class MainWindow : Window
     {
+        private UDPServer server;
+
         public MainWindow()
         {
             InitializeComponent();
-            
+
             
             
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void joinHost(object sender, RoutedEventArgs e)
         {
-            UDPServer server = new UDPServer();
-            server.Show();
-            server.Server("127.0.0.1", 27000, 50000);
+            string name = playerName.Text;
+            this.server = new UDPServer();
+            this.server.Show();
+            this.server.Server("127.0.0.1", 27000, 50000);
+            this.server.addPlayer(name);
             buttonHost.IsEnabled = false;
+            buttonJoin.IsEnabled = true;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void joinClient(object sender, RoutedEventArgs e)
         {
-            UDPClient client= new UDPClient();
-            client.Show();
-            client.Client("127.0.0.1", 50000, 27000);
-            buttonJoin.IsEnabled = false;
+            string name = playerName.Text;
+            if (this.server.getPlayer(name) == null) 
+            {
+                UDPClient client = new UDPClient(name);
+                client.Show();
+                client.Client("127.0.0.1", 50000, 27000);
+                client.addPlayer(name);
+                buttonJoin.IsEnabled = false;
+            }
         }
     }
 }

@@ -24,20 +24,22 @@ namespace CoopSurvivalGame
     /// </summary>
     public partial class UDPClient : Window
     {
-        public UDPClient()
-        {
-            InitializeComponent();
-            canvas.Focus();
-        }
-
+       
         private Socket _socketForReceive = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private Socket _socketForSend = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private const int bufSize = 8 * 1024;
         private State state = new State();
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         private AsyncCallback recv = null;
+
+        List<Player> players = new List<Player>();
         List<Rectangle> shotsToRemove = new List<Rectangle>();
 
+        public UDPClient(string playerName)
+        {
+            InitializeComponent();
+            canvas.Focus();
+        }
 
         public class State
         {
@@ -61,12 +63,17 @@ namespace CoopSurvivalGame
                 State so = (State)ar.AsyncState;
                 int bytes = _socketForReceive.EndReceiveFrom(ar, ref epFrom);
                 _socketForReceive.BeginReceiveFrom(so.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv, so);
-                string rec = Encoding.ASCII.GetString(so.buffer, 0, bytes);
 
-                Dispatcher.Invoke(new Action(() => {
-                    ChangePosition(rec);
-                }));
+                string rec = Encoding.ASCII.GetString(so.buffer, 0, bytes);
+                string actionType = rec.Split(',')[(int)RECEIVED.ACTION_TYPE];
+
+                Dispatcher.Invoke(new Action( () => {
+
+                    dispatchAction(actionType, rec);
+
+                } ) );
             }, state);
+            
         }
 
         public void Send(string text)
@@ -78,68 +85,98 @@ namespace CoopSurvivalGame
                 int bytes = _socketForSend.EndSend(ar);
             }, state);
         }
+        //TODO change method name
+        public void addPlayer(string playerName)
+        {
+            Coordinate startCoordinates = new Coordinate(250, 175);
+            Player newPlayer = new Player(playerName, "blue", this);
+            this.players.Add(newPlayer);
+            startCoordinates.setPlayerAtCoordinates(newPlayer.Figure);
+            canvas.Children.Add(newPlayer.Figure);
+
+            Send(String.Format("{0},{1},{2},{3},{4}", "addPlayer", newPlayer.Name, startCoordinates.positionFromTop, startCoordinates.positionFromLeft, newPlayer.color));
+        }
+
+        private void dispatchAction(string action, string receivedMessage)
+        {
+            switch (action)
+            {
+                case "addPlayer":
+                    addNewPlayer(receivedMessage);
+                    break;
+
+                case "movePlayer":
+                    ChangePosition(receivedMessage);
+                    break;
+
+                default:
+                    break;
+
+            }
+
+        }
+
+        private void addNewPlayer(string playerData)
+        {
+            string playerName = playerData.Split(',')[(int)RECEIVED.PLAYER_NAME];
+            int startPositionFromTop = Convert.ToInt32(playerData.Split(',')[(int)RECEIVED.POSITION_FROM_LEFT]);
+            int startPositionFromLeft = Convert.ToInt32(playerData.Split(',')[(int)RECEIVED.POSITION_FROM_LEFT]);
+            string figureColor = playerData.Split(',')[(int)RECEIVED.FIGURE_COLOR];
+
+            //if (this.getPlayer(playerName) == null)
+            //{
+                Player newPlayer = new Player(playerName, figureColor, this);
+                Coordinate startCoordinate = new Coordinate(startPositionFromTop, startPositionFromLeft);
+                startCoordinate.setPlayerAtCoordinates(newPlayer.Figure);
+                this.players.Add(newPlayer);
+                canvas.Children.Add(newPlayer.Figure);
+            //}
+
+        }
+
+        public Player getPlayer(string Name)
+        {
+            return this.players.Find(player => player.Name == Name);
+        }
 
         private void ChangePosition(string position)
         {
-            string elementType = position.Split(',')[0];
-            int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
-            int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
-            
-            if(elementType == "player1")
-            {
-                Canvas.SetLeft(player1, positionFromLeft);
-                Canvas.SetTop(player1, positionFromTop);
-            } else if (elementType == "player2")
-            {
-                Canvas.SetLeft(player2, positionFromLeft);
-                Canvas.SetTop(player2, positionFromTop);
-            }
-            else if (elementType == "shot")
-            {
-                //string elementName = position.Split(',')[3];
-                //try
-                //{
-                //    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
-                //    Canvas.SetTop(shot, positionFromTop);
-                //    Canvas.SetLeft(shot, positionFromLeft);
-                //}
-                //catch (Exception)
-                //{
-                    Rectangle shot = new Rectangle();
-                    //shot.Name = elementName;
-                    shot.Width = 5;
-                    shot.Height = 5;
-                    shot.Tag = "shot";
-                    shot.Fill = System.Windows.Media.Brushes.Cyan;
-                    Canvas.SetTop(shot, positionFromTop);
-                    Canvas.SetLeft(shot, positionFromLeft);
-                    canvas.Children.Add(shot);
-                //}
+            string playerName = position.Split(',')[(int)RECEIVED.PLAYER_NAME];
+            int positionFromTop = Convert.ToInt32(position.Split(',')[(int)RECEIVED.POSITION_FROM_TOP]);
+            int positionFromLeft = Convert.ToInt32(position.Split(',')[(int)RECEIVED.POSITION_FROM_LEFT]);
+
+            Player player = getPlayer(playerName);
+
+            Coordinate newCoordinate = new Coordinate(positionFromTop, positionFromLeft);
+            newCoordinate.setPlayerAtCoordinates(player.Figure);
+            //if (elementType == "shot")
+            //{
+            //    //string elementName = position.Split(',')[3];
+            //    //try
+            //    //{
+            //    //    var shot = (from Rectangle item in canvas.Children where elementName.Equals(item.Name) select item).First();
+            //    //    Canvas.SetTop(shot, positionFromTop);
+            //    //    Canvas.SetLeft(shot, positionFromLeft);
+            //    //}
+            //    //catch (Exception)
+            //    //{
+            //        Rectangle shot = new Rectangle();
+            //        //shot.Name = elementName;
+            //        shot.Width = 5;
+            //        shot.Height = 5;
+            //        shot.Tag = "shot";
+            //        shot.Fill = System.Windows.Media.Brushes.Cyan;
+            //        Canvas.SetTop(shot, positionFromTop);
+            //        Canvas.SetLeft(shot, positionFromLeft);
+            //        canvas.Children.Add(shot);
+            //    //}
                 
-            }
+            //}
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
-            {
-                case Key.A:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) - 5).ToString());
-                    break;
-                case Key.W:
-                    Send("player2," + (Canvas.GetTop(player2) - 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
-                    break;
-                case Key.S:
-                    Send("player2," + (Canvas.GetTop(player2) + 5).ToString() + "," + Canvas.GetLeft(player2).ToString());
-                    break;
-                case Key.D:
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + (Canvas.GetLeft(player2) + 5).ToString());
-                    break;
-
-                default:
-
-                    break;
-            }
+            this.players[(int)PLAYER.TWO].Controller.move(e.Key);
         }
     }
 }
