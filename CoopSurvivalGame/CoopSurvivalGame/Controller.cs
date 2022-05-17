@@ -21,8 +21,8 @@ namespace CoopSurvivalGame
         public void move(Key direction)
         {
             string playerParentType = this.player.Parent.GetType().ToString();
-            if (playerParentType.Contains("UDPServer"))
-            {
+            //if (playerParentType.Contains("UDPServer"))
+            //{
                 switch (direction)  
                 {
                     case Key.A:
@@ -41,7 +41,7 @@ namespace CoopSurvivalGame
 
                         break;
             }
-            }
+            //}
             this.player.Parent.Send(String.Format("{0},{1},{2},{3}", "movePlayer", this.player.Name, Canvas.GetTop(this.player.Figure).ToString(), Canvas.GetLeft(player.Figure).ToString()));
         }
     }

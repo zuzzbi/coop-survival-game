@@ -119,20 +119,20 @@ namespace CoopSurvivalGame
         private void addNewPlayer(string playerData)
         {
             string playerName = playerData.Split(',')[(int)RECEIVED.PLAYER_NAME];
-            int startPositionFromTop = Convert.ToInt32(playerData.Split(',')[(int)RECEIVED.POSITION_FROM_LEFT]);
+            int startPositionFromTop = Convert.ToInt32(playerData.Split(',')[(int)RECEIVED.POSITION_FROM_TOP]);
             int startPositionFromLeft = Convert.ToInt32(playerData.Split(',')[(int)RECEIVED.POSITION_FROM_LEFT]);
             string figureColor = playerData.Split(',')[(int)RECEIVED.FIGURE_COLOR];
 
-            //if (this.getPlayer(playerName) == null)
-            //{
+            if (this.getPlayer(playerName) == null)
+            {
                 Player newPlayer = new Player(playerName, figureColor, this);
                 Coordinate startCoordinate = new Coordinate(startPositionFromTop, startPositionFromLeft);
                 startCoordinate.setPlayerAtCoordinates(newPlayer.Figure);
                 this.players.Add(newPlayer);
                 canvas.Children.Add(newPlayer.Figure);
-            //}
-
         }
+
+    }
 
         public Player getPlayer(string Name)
         {
@@ -176,7 +176,7 @@ namespace CoopSurvivalGame
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            this.players[(int)PLAYER.TWO].Controller.move(e.Key);
+            this.players[(int)PLAYER.ONE].Controller.move(e.Key);
         }
     }
 }

@@ -39,10 +39,10 @@ namespace CoopSurvivalGame
 
         private void createFigure(string figureColor)
         {
-            Figure = new Rectangle();
-            Figure.Width = 10;
-            Figure.Height = 10;
-            Figure.Fill = convertStringToBrush(figureColor);
+            this.Figure = new Rectangle();
+            this.Figure.Width = 10;
+            this.Figure.Height = 10;
+            this.Figure.Fill = convertStringToBrush(figureColor);
 
         }
 
@@ -83,5 +83,6 @@ namespace CoopSurvivalGame
         POSITION_FROM_TOP = 2,
         POSITION_FROM_LEFT = 3,
         FIGURE_COLOR = 4,
+        DIRECTION = 4,
     }
 }
