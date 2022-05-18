@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -76,10 +76,19 @@ namespace CoopSurvivalGame
                 _socketForReceive.BeginReceiveFrom(so.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv, so);
                 string rec = Encoding.ASCII.GetString(so.buffer, 0, bytes);
 
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    ChangePosition(rec);
+
+                
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Thread t = new Thread(() => this.ChangePosition(rec));
+                        t.Start();
+                    //ChangePosition(rec);
+
                 }));
+                
+                
+
+   
             }, state);
         }
 
@@ -118,80 +127,130 @@ namespace CoopSurvivalGame
         {
             try
             {
+
                 string elementType = position.Split(',')[0];
                 int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
                 int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
                 if (elementType == "player1")
                 {
-                    if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
+                    lock (canvas)
                     {
-                        Canvas.SetLeft(player1, positionFromLeft);
-                        Canvas.SetTop(player1, positionFromTop);
+                        lock (player1)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
+                                {
+                                    Canvas.SetLeft(player1, positionFromLeft);
+                                    Canvas.SetTop(player1, positionFromTop);
+                                }
+                            }));
+
+                        }
                     }
+
                 }
                 else if (elementType == "player2")
                 {
-                    if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player2.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player2.Width)
+                    lock (canvas)
                     {
-                        Canvas.SetLeft(player2, positionFromLeft);
-                        Canvas.SetTop(player2, positionFromTop);
+                        lock (player2)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player2.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player2.Width)
+                                {
+                                    Canvas.SetLeft(player2, positionFromLeft);
+                                    Canvas.SetTop(player2, positionFromTop);
+                                }
+                            }));
+                        }
                     }
                 }
                 else if (positionFromLeft == -1 && positionFromTop == -1)
                 {
-                    try
+                    lock (canvas)
                     {
-                        var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                        canvas.Children.Remove(shot);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                                canvas.Children.Remove(shot);
+                            }
+                            catch (Exception) { }
+                        }));
                     }
-                    catch (Exception) { }
                 }
+
                 else if (elementType.Contains("shot"))
                 {
-                    try
+                    lock (canvas)
                     {
-                        var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                        Canvas.SetTop(shot, positionFromTop);
-                        Canvas.SetLeft(shot, positionFromLeft);
-                    }
-                    catch (Exception)
-                    {
-                        Rectangle shot = new Rectangle();
-                        shot.Name = elementType;
-                        shot.Width = 5;
-                        shot.Height = 5;
-                        shot.Tag = "shot";
-                        shot.Fill = System.Windows.Media.Brushes.Cyan;
-                        Canvas.SetTop(shot, positionFromTop);
-                        Canvas.SetLeft(shot, positionFromLeft);
-                        canvas.Children.Add(shot);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                                Canvas.SetTop(shot, positionFromTop);
+                                Canvas.SetLeft(shot, positionFromLeft);
+                            }
+                            catch (Exception)
+                            {
+                                Rectangle shot = new Rectangle();
+                                shot.Name = elementType;
+                                shot.Width = 5;
+                                shot.Height = 5;
+                                shot.Tag = "shot";
+                                shot.Fill = System.Windows.Media.Brushes.Cyan;
+                                Canvas.SetTop(shot, positionFromTop);
+                                Canvas.SetLeft(shot, positionFromLeft);
+                                canvas.Children.Add(shot);
+                            }
+                        }));
                     }
                 }
                 else if (elementType.Contains("enemy"))
                 {
-                    try
+                    lock (canvas)
                     {
-                        var enemy = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                        Canvas.SetTop(enemy, positionFromTop);
-                        Canvas.SetLeft(enemy, positionFromLeft);
-                    }
-                    catch (Exception)
-                    {
-                        Rectangle enemy = new Rectangle();
-                        enemy.Name = elementType;
-                        enemy.Width = 40;
-                        enemy.Height = 40;
-                        enemy.Tag = "enemy";
-                        enemy.Fill = System.Windows.Media.Brushes.Red;
-                        Canvas.SetTop(enemy, positionFromTop);
-                        Canvas.SetLeft(enemy, positionFromLeft);
-                        canvas.Children.Add(enemy);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                var enemy = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                                Canvas.SetTop(enemy, positionFromTop);
+                                Canvas.SetLeft(enemy, positionFromLeft);
+                            }
+                            catch (Exception)
+                            {
+                                Rectangle enemy = new Rectangle();
+                                enemy.Name = elementType;
+                                enemy.Width = 40;
+                                enemy.Height = 40;
+                                enemy.Tag = "enemy";
+                                enemy.Fill = System.Windows.Media.Brushes.Red;
+                                Canvas.SetTop(enemy, positionFromTop);
+                                Canvas.SetLeft(enemy, positionFromLeft);
+                                canvas.Children.Add(enemy);
+                            }
+                        }));
+
                     }
                 }
                 else if (elementType == "score")
                 {
-                    Score1.Text = Convert.ToString(positionFromTop);
-                    Score2.Text = Convert.ToString(positionFromLeft);
+                    lock (Score1)
+                    {
+                        lock (Score2)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                Score1.Text = Convert.ToString(positionFromTop);
+                                Score2.Text = Convert.ToString(positionFromLeft);
+                            }));
+                        }
+                    }
                 }
             }
             catch (Exception) { }
@@ -229,7 +288,7 @@ namespace CoopSurvivalGame
                     stopwatch.Stop();
                     if (!e.IsRepeat && stopwatch.ElapsedMilliseconds >= shotDelay)
                     {
-                        Send("shotDown," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height).ToString().ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
+                        Send("shotDown," + Convert.ToInt32(Canvas.GetTop(player2) + player2.Height).ToString() + "," + Convert.ToInt32(Canvas.GetLeft(player2) + player2.Width / 2).ToString());
                         stopwatch.Restart();
                     }
                     else

@@ -42,6 +42,7 @@ namespace CoopSurvivalGame
             UDPClient client= new UDPClient();
             client.Show();
             client.Client("127.0.0.1", 50000, 27000);
+            client.Send("Hej,0,0"); 
             buttonJoin.IsEnabled = false;
         }
     }

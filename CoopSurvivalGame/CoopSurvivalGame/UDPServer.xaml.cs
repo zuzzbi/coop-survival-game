@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -35,9 +35,6 @@ namespace CoopSurvivalGame
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
-            //enemyTimer.Interval = TimeSpan.FromMilliseconds(10000);
-            //enemyTimer.Tick += EnemyLoop;
-            //enemyTimer.Start();
             canvas.Focus();
         }
 
@@ -48,7 +45,6 @@ namespace CoopSurvivalGame
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         private AsyncCallback recv = null;
         DispatcherTimer gameTimer = new DispatcherTimer();
-        //DispatcherTimer enemyTimer = new DispatcherTimer();
         List<Rectangle> shotsActive = new List<Rectangle>();
         List<Rectangle> itemsToRemove = new List<Rectangle>();
         List<Rectangle> enemyActive = new List<Rectangle>();
@@ -90,7 +86,9 @@ namespace CoopSurvivalGame
 
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    ChangePosition(rec);
+                    Thread t = new Thread(() => this.ChangePosition(rec));
+                    t.Start();
+                    //ChangePosition(rec);
                 }));
             }, state);
 
@@ -112,14 +110,39 @@ namespace CoopSurvivalGame
             int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
             int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
 
-            if (elemntType == "player2")
-            {
-                if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
-                {
-                    Canvas.SetLeft(player2, positionFromLeft);
-                    Canvas.SetTop(player2, positionFromTop);
 
-                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+            if (elemntType == "Hej")
+            {
+                lock (canvas)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        foreach (Rectangle item in enemyActive)
+                        {
+                            Send(item.Name + "," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
+                        }
+                    }));
+
+                }
+            }
+
+            else if (elemntType == "player2")
+            {
+                lock (canvas)
+                {
+                    lock (player2)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
+                            {
+                                Canvas.SetLeft(player2, positionFromLeft);
+                                Canvas.SetTop(player2, positionFromTop);
+
+                                Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                            }
+                        }));
+                    }
                 }
             }
             else if (elemntType == "shotUp")
@@ -142,40 +165,46 @@ namespace CoopSurvivalGame
 
         private void CreateShot(Key key, int positionTop, int positionLeft, char player)
         {
-            Rectangle shot = new Rectangle();
-            shot.Width = 5;
-            shot.Height = 5;
-            shot.Fill = System.Windows.Media.Brushes.Cyan;
-            shot.Name = "shot"+ player + shotCounterServer.ToString();
-            shotCounterServer++;
-            switch (key)
+            lock (canvas)
             {
-                case Key.Up:
-                    Canvas.SetTop(shot, positionTop);
-                    Canvas.SetLeft(shot, positionLeft);
-                    shot.Tag = "shotUp";
-                    break;
-                case Key.Down:
-                    Canvas.SetTop(shot, positionTop - shot.Height);
-                    Canvas.SetLeft(shot, positionLeft);
-                    shot.Tag = "shotDown";
-                    break;
-                case Key.Right:
-                    Canvas.SetTop(shot, positionTop);
-                    Canvas.SetLeft(shot, positionLeft);
-                    shot.Tag = "shotRight";
-                    break;
-                case Key.Left:
-                    Canvas.SetTop(shot, positionTop);
-                    Canvas.SetLeft(shot, positionLeft - shot.Width);
-                    shot.Tag = "shotLeft";
-                    break;
-                default:
-                    break;
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    Rectangle shot = new Rectangle();
+                    shot.Width = 5;
+                    shot.Height = 5;
+                    shot.Fill = System.Windows.Media.Brushes.Cyan;
+                    shot.Name = "shot" + player + shotCounterServer.ToString();
+                    shotCounterServer++;
+                    switch (key)
+                    {
+                        case Key.Up:
+                            Canvas.SetTop(shot, positionTop);
+                            Canvas.SetLeft(shot, positionLeft);
+                            shot.Tag = "shotUp";
+                            break;
+                        case Key.Down:
+                            Canvas.SetTop(shot, positionTop - shot.Height);
+                            Canvas.SetLeft(shot, positionLeft);
+                            shot.Tag = "shotDown";
+                            break;
+                        case Key.Right:
+                            Canvas.SetTop(shot, positionTop);
+                            Canvas.SetLeft(shot, positionLeft);
+                            shot.Tag = "shotRight";
+                            break;
+                        case Key.Left:
+                            Canvas.SetTop(shot, positionTop);
+                            Canvas.SetLeft(shot, positionLeft - shot.Width);
+                            shot.Tag = "shotLeft";
+                            break;
+                        default:
+                            break;
+                    }
+                    canvas.Children.Add(shot);
+                    shotsActive.Add(shot);
+                    Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
+                }));
             }
-            canvas.Children.Add(shot);
-            shotsActive.Add(shot);
-            Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
         }
 
         private void CreateEnemy()
@@ -247,12 +276,15 @@ namespace CoopSurvivalGame
                             {
                                 playerPoints2++;
                                 Score2.Text = Convert.ToString(playerPoints2);
+                                Send("score," + playerPoints1 + "," + playerPoints2);
                             }
                             else
                             {
                                 playerPoints1++;
                                 Score1.Text = Convert.ToString(playerPoints1);
+                                Send("score," + playerPoints1 + "," + playerPoints2);
                             }
+                            Send("score," + playerPoints1 + "," + playerPoints2);
                         }
                         else
                         {
