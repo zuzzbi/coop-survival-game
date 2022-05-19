@@ -116,5 +116,22 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Debug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sprites\shot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sprites\enemy.png" />
+    <Resource Include="sprites\p1_down.png" />
+    <Resource Include="sprites\p1_left.png" />
+    <Resource Include="sprites\p1_right.png" />
+    <Resource Include="sprites\p1_up.png" />
+    <Resource Include="sprites\p2_down.png" />
+    <Resource Include="sprites\p2_left.png" />
+    <Resource Include="sprites\p2_right.png" />
+    <Resource Include="sprites\p2_up.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -44,7 +44,8 @@ namespace CoopSurvivalGame
         private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
         DispatcherTimer gameTimer = new DispatcherTimer();
         private AsyncCallback recv = null;
-        List<Rectangle> shotsToRemove = new List<Rectangle>();
+        List<Rectangle> shotsActive = new List<Rectangle>();
+        List<Rectangle> itemsToRemove = new List<Rectangle>();
         bool keyA = false;
         bool keyW = false;
         bool keyS = false;
@@ -104,6 +105,48 @@ namespace CoopSurvivalGame
 
         public void GameLoop(object sender, EventArgs e)
         {
+            foreach (Rectangle item in shotsActive)
+            {
+                if (item.Name.Contains("Up"))
+                {
+                    Canvas.SetTop(item, Canvas.GetTop(item) - 7);
+                    if (Canvas.GetTop(item) < -5)
+                    {
+                        itemsToRemove.Add(item);
+                    }
+                }
+                if (item.Name.Contains("Down"))
+                {
+                    Canvas.SetTop(item, Canvas.GetTop(item) + 7);
+                    if (Canvas.GetTop(item) > canvas.ActualHeight + 5)
+                    {
+                        itemsToRemove.Add(item);
+                    }
+                }
+                if (item.Name.Contains("Right"))
+                {
+                    Canvas.SetLeft(item, Canvas.GetLeft(item) + 7);
+                    if (Canvas.GetLeft(item) > canvas.ActualWidth + 5)
+                    {
+                        itemsToRemove.Add(item);
+                    }
+                }
+                if (item.Name.Contains("Left"))
+                {
+                    Canvas.SetLeft(item, Canvas.GetLeft(item) - 7);
+                    if (Canvas.GetLeft(item) < -5)
+                    {
+                        itemsToRemove.Add(item);
+                    }
+                }
+            }
+
+            foreach (Rectangle item in itemsToRemove)
+            {
+                shotsActive.Remove(item);
+                canvas.Children.Remove(item);
+            }
+
             if (keyA)
             {
                 Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
@@ -145,10 +188,8 @@ namespace CoopSurvivalGame
                                     Canvas.SetTop(player1, positionFromTop);
                                 }
                             }));
-
                         }
                     }
-
                 }
                 else if (elementType == "player2")
                 {
@@ -175,14 +216,13 @@ namespace CoopSurvivalGame
                         {
                             try
                             {
-                                var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                                canvas.Children.Remove(shot);
+                                var itemToRemove = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
+                                canvas.Children.Remove(itemToRemove);
                             }
                             catch (Exception) { }
                         }));
                     }
                 }
-
                 else if (elementType.Contains("shot"))
                 {
                     lock (canvas)
@@ -201,10 +241,10 @@ namespace CoopSurvivalGame
                                 shot.Name = elementType;
                                 shot.Width = 5;
                                 shot.Height = 5;
-                                shot.Tag = "shot";
-                                shot.Fill = System.Windows.Media.Brushes.Cyan;
+                                shot.Fill = System.Windows.Media.Brushes.OrangeRed;
                                 Canvas.SetTop(shot, positionFromTop);
                                 Canvas.SetLeft(shot, positionFromLeft);
+                                shotsActive.Add(shot);
                                 canvas.Children.Add(shot);
                             }
                         }));
@@ -226,10 +266,10 @@ namespace CoopSurvivalGame
                             {
                                 Rectangle enemy = new Rectangle();
                                 enemy.Name = elementType;
-                                enemy.Width = 40;
-                                enemy.Height = 40;
+                                enemy.Width = 30;
+                                enemy.Height = 30;
                                 enemy.Tag = "enemy";
-                                enemy.Fill = System.Windows.Media.Brushes.Red;
+                                enemy.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/enemy.png")));
                                 Canvas.SetTop(enemy, positionFromTop);
                                 Canvas.SetLeft(enemy, positionFromLeft);
                                 canvas.Children.Add(enemy);
@@ -252,6 +292,34 @@ namespace CoopSurvivalGame
                         }
                     }
                 }
+                else if (elementType.Contains("dir"))
+                {
+                    lock (canvas)
+                    {
+                        lock (player1)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                if (elementType.Contains("W"))
+                                {
+                                    player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_up.png")));
+                                }
+                                else if (elementType.Contains("S"))
+                                {
+                                    player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_down.png")));
+                                }
+                                else if (elementType.Contains("A"))
+                                {
+                                    player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_left.png")));
+                                }
+                                else if (elementType.Contains("D"))
+                                {
+                                    player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_right.png")));
+                                }
+                            }));
+                        }
+                    }
+                }
             }
             catch (Exception) { }
         }
@@ -262,15 +330,35 @@ namespace CoopSurvivalGame
             {
                 case Key.A:
                     keyA = true;
+                    if (!e.IsRepeat)
+                    { 
+                        player2.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p2_left.png")));
+                        Send("dir" + e.Key.ToString() + ",0,0");
+                    }
                     break;
                 case Key.W:
                     keyW = true;
+                    if (!e.IsRepeat)
+                    { 
+                        player2.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p2_up.png")));
+                        Send("dir" + e.Key.ToString() + ",0,0");
+                    }
                     break;
                 case Key.S:
                     keyS = true;
+                    if (!e.IsRepeat)
+                    {
+                        player2.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p2_down.png")));
+                        Send("dir" + e.Key.ToString() + ",0,0");
+                    }
                     break;
                 case Key.D:
                     keyD = true;
+                    if (!e.IsRepeat)
+                    { 
+                        player2.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p2_right.png")));
+                        Send("dir" + e.Key.ToString() + ",0,0");
+                    }
                     break;
                 case Key.Up:
                     stopwatch.Stop();
