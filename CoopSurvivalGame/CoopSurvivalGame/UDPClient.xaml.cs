@@ -231,12 +231,6 @@ namespace CoopSurvivalGame
                         {
                             try
                             {
-                                var shot = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                                Canvas.SetTop(shot, positionFromTop);
-                                Canvas.SetLeft(shot, positionFromLeft);
-                            }
-                            catch (Exception)
-                            {
                                 Rectangle shot = new Rectangle();
                                 shot.Name = elementType;
                                 shot.Width = 5;
@@ -247,6 +241,7 @@ namespace CoopSurvivalGame
                                 shotsActive.Add(shot);
                                 canvas.Children.Add(shot);
                             }
+                            catch (Exception) { }
                         }));
                     }
                 }
@@ -258,12 +253,6 @@ namespace CoopSurvivalGame
                         {
                             try
                             {
-                                var enemy = (from Rectangle item in canvas.Children where elementType.Equals(item.Name) select item).First();
-                                Canvas.SetTop(enemy, positionFromTop);
-                                Canvas.SetLeft(enemy, positionFromLeft);
-                            }
-                            catch (Exception)
-                            {
                                 Rectangle enemy = new Rectangle();
                                 enemy.Name = elementType;
                                 enemy.Width = 30;
@@ -274,8 +263,30 @@ namespace CoopSurvivalGame
                                 Canvas.SetLeft(enemy, positionFromLeft);
                                 canvas.Children.Add(enemy);
                             }
+                            catch (Exception) { }
                         }));
 
+                    }
+                }
+                else if (elementType.Contains("bonus"))
+                {
+                    lock (canvas)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                Rectangle bonus = new Rectangle();
+                                bonus.Name = elementType;
+                                bonus.Width = 15;
+                                bonus.Height = 15;
+                                bonus.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/bonus.png")));
+                                Canvas.SetTop(bonus, positionFromTop);
+                                Canvas.SetLeft(bonus, positionFromLeft);
+                                canvas.Children.Add(bonus);
+                            }
+                            catch (Exception) { }
+                        }));
                     }
                 }
                 else if (elementType == "score")

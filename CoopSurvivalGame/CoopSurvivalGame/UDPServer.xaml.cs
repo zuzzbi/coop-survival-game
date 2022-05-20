@@ -32,6 +32,7 @@ namespace CoopSurvivalGame
             Score2.Text = Convert.ToString(playerScore2);
             stopwatchShot.Start();
             stopwatchEnemy.Start();
+            stopwatchBonus.Start();
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
@@ -48,14 +49,18 @@ namespace CoopSurvivalGame
         List<Rectangle> shotsActive = new List<Rectangle>();
         List<Rectangle> itemsToRemove = new List<Rectangle>();
         List<Rectangle> enemyActive = new List<Rectangle>();
+        List<Rectangle> bonusActive = new List<Rectangle>();
         bool keyA = false;
         bool keyW = false;
         bool keyS = false;
         bool keyD = false;
-        int shotCounterServer = 0;
-        int enemyCounterServer = 0;
+        int shotCounter = 0;
+        int enemyCounter = 0;
+        int bonusCounter = 0;
         Stopwatch stopwatchShot = new Stopwatch();
         Stopwatch stopwatchEnemy = new Stopwatch();
+        Stopwatch stopwatchBonus = new Stopwatch();
+        Stopwatch stopwatchBonusDuration = new Stopwatch();
         int shotDelay = 500;
         int playerScore1 = 0;
         int playerScore2 = 0;
@@ -200,8 +205,8 @@ namespace CoopSurvivalGame
                     shot.Width = 5;
                     shot.Height = 5;
                     shot.Fill = System.Windows.Media.Brushes.OrangeRed;
-                    shot.Name = "shot" + player + key.ToString() + shotCounterServer.ToString();
-                    shotCounterServer++;
+                    shot.Name = "shot" + player + key.ToString() + shotCounter.ToString();
+                    shotCounter++;
                     switch (key)
                     {
                         case Key.Up:
@@ -236,15 +241,31 @@ namespace CoopSurvivalGame
             enemy.Width = 30;
             enemy.Height = 30;
             enemy.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/enemy.png")));
-            enemy.Name = "enemy" + enemyCounterServer.ToString();
+            enemy.Name = "enemy" + enemyCounter.ToString();
             enemy.Tag = "2";
-            enemyCounterServer++;
+            enemyCounter++;
             Random random = new Random();
             Canvas.SetTop(enemy, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - Convert.ToInt32(enemy.Height)));
             Canvas.SetLeft(enemy, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(enemy.Width)));
             canvas.Children.Add(enemy);
             enemyActive.Add(enemy);
             Send(enemy.Name + "," + Canvas.GetTop(enemy).ToString() + "," + Canvas.GetLeft(enemy).ToString());
+        }
+
+        private void CreateBonus() 
+        {
+            Rectangle bonus = new Rectangle();
+            Random random = new Random();
+            bonus.Width = 15;
+            bonus.Height = 15;
+            bonus.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/bonus.png")));
+            bonus.Name = "bonus" + random.Next(1, 3) + "_" + bonusCounter.ToString();
+            bonusCounter++;
+            Canvas.SetTop(bonus, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - Convert.ToInt32(bonus.Height)));
+            Canvas.SetLeft(bonus, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(bonus.Width)));
+            canvas.Children.Add(bonus);
+            bonusActive.Add(bonus);
+            Send(bonus.Name + "," + Canvas.GetTop(bonus).ToString() + "," + Canvas.GetLeft(bonus).ToString());
         }
 
         private void GameLoop(object sender, EventArgs e)
@@ -301,14 +322,16 @@ namespace CoopSurvivalGame
                                 playerScore2++;
                                 Score2.Text = Convert.ToString(playerScore2);
                                 Send("score," + playerScore1 + "," + playerScore2);
+                                Send(enemy.Name + ",-1,-1");
                             }
                             else
                             {
                                 playerScore1++;
                                 Score1.Text = Convert.ToString(playerScore1);
                                 Send("score," + playerScore1 + "," + playerScore2);
+                                Send(enemy.Name + ",-1,-1");
                             }
-                            Send("score," + playerScore1 + "," + playerScore2);                         
+                            Send("score," + playerScore1 + "," + playerScore2);
                             Send(enemy.Name + ",-1,-1");
                             Send(shot.Name + ",-1,-1");
                         }
@@ -374,6 +397,17 @@ namespace CoopSurvivalGame
             else
             {
                 stopwatchEnemy.Start();
+            }
+
+            stopwatchBonus.Stop();
+            if (stopwatchBonus.ElapsedMilliseconds > 5000 && bonusActive.Count <= 1)
+            {
+                CreateBonus();
+                stopwatchBonus.Restart();
+            }
+            else
+            {
+                stopwatchBonus.Start();
             }
         }
     

@@ -123,7 +123,6 @@
     <Resource Include="sprites\shot.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="sprites\enemy.png" />
     <Resource Include="sprites\p1_down.png" />
     <Resource Include="sprites\p1_left.png" />
     <Resource Include="sprites\p1_right.png" />
@@ -132,6 +131,15 @@
     <Resource Include="sprites\p2_left.png" />
     <Resource Include="sprites\p2_right.png" />
     <Resource Include="sprites\p2_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sprites\bonus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sprites\enemy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sprites\floor.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

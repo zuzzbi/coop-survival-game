@@ -11,13 +11,16 @@
         <TextBlock HorizontalAlignment="Left" Margin="250,0,0,0" TextWrapping="Wrap" Text="Player2" VerticalAlignment="Top" Width="200" TextAlignment="Center"/>
         <TextBlock HorizontalAlignment="Left" Margin="0,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" x:Name="Score1" Width="200" TextAlignment="Center"/>
         <TextBlock HorizontalAlignment="Left" Margin="250,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" x:Name="Score2" Width="200" TextAlignment="Center"/>
-        <Canvas Name="canvas" Focusable="True" Margin="0,50,0,0" KeyDown="OnKeyDown" KeyUp="OnKeyUp">
-            <Rectangle Name="player1" Height="50" Canvas.Left="131" Stroke="Transparent" Canvas.Top="175" Width="50">
+        <Canvas Name="canvas" Focusable="True" Margin="0,40,0,0" KeyDown="OnKeyDown" KeyUp="OnKeyUp">
+            <Canvas.Background>
+                <ImageBrush ImageSource="sprites/floor.png"/>
+            </Canvas.Background>
+            <Rectangle Name="player1" Height="50" Canvas.Left="131" Stroke="Transparent" Canvas.Top="175" Width="50" Canvas.ZIndex="1">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="sprites/p1_down.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-            <Rectangle Name="player2" Height="50" Canvas.Left="250" Stroke="Transparent" Canvas.Top="175" Width="50">
+            <Rectangle Name="player2" Height="50" Canvas.Left="250" Stroke="Transparent" Canvas.Top="175" Width="50" Canvas.ZIndex="2">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="sprites/p2_down.png"/>
                 </Rectangle.Fill>
