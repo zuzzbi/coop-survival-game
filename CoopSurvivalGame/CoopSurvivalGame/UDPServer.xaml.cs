@@ -60,7 +60,8 @@ namespace CoopSurvivalGame
         Stopwatch stopwatchShot = new Stopwatch();
         Stopwatch stopwatchEnemy = new Stopwatch();
         Stopwatch stopwatchBonus = new Stopwatch();
-        Stopwatch stopwatchBonusDuration = new Stopwatch();
+        int bonusShots1 = 0;
+        int bonusShots2 = 0;
         int shotDelay = 500;
         int playerScore1 = 0;
         int playerScore2 = 0;
@@ -259,7 +260,7 @@ namespace CoopSurvivalGame
             bonus.Width = 15;
             bonus.Height = 15;
             bonus.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/bonus.png")));
-            bonus.Name = "bonus" + random.Next(1, 3) + "_" + bonusCounter.ToString();
+            bonus.Name = "bonus" + bonusCounter.ToString();
             bonusCounter++;
             Canvas.SetTop(bonus, random.Next(0, Convert.ToInt32(canvas.ActualHeight) - Convert.ToInt32(bonus.Height)));
             Canvas.SetLeft(bonus, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(bonus.Width)));
@@ -305,6 +306,23 @@ namespace CoopSurvivalGame
                     }
                 }
             }
+
+            foreach (Rectangle bonus in bonusActive)
+            {
+                if (Overlap(player1, bonus))
+                {
+                    bonusShots1 = 3;
+                    itemsToRemove.Add(bonus);
+                    Send(bonus.Name + ",-1,-1");
+                }
+                else if (Overlap(player2, bonus))
+                {
+                    bonusShots2 = 3;
+                    itemsToRemove.Add(bonus);
+                    Send(bonus.Name + ",-1,-1");
+                }
+            }
+
             foreach (Rectangle shot in shotsActive)
             {
                 foreach (var enemy in enemyActive)
@@ -314,9 +332,21 @@ namespace CoopSurvivalGame
                         itemsToRemove.Add(shot);
                         Send(shot.Name + ",-1,-1");
                         int lifeLeft = Convert.ToInt32(enemy.Tag) - 1;
+                        if (shot.Name.Contains("shots") && bonusShots1 > 0)
+                        {
+                            lifeLeft = Convert.ToInt32(enemy.Tag) - 2;
+                            bonusShots1--;
+                        }
+                        else if (shot.Name.Contains("shotc") && bonusShots2 > 0)
+                        {
+                            lifeLeft = Convert.ToInt32(enemy.Tag) - 2;
+                            bonusShots2--;
+                        }
+
                         if (lifeLeft <= 0)
                         {
                             itemsToRemove.Add(enemy);
+                            Send(enemy.Name + ",-1,-1");
                             if (shot.Name.Contains("shotc"))
                             {
                                 playerScore2++;
@@ -331,9 +361,7 @@ namespace CoopSurvivalGame
                                 Send("score," + playerScore1 + "," + playerScore2);
                                 Send(enemy.Name + ",-1,-1");
                             }
-                            Send("score," + playerScore1 + "," + playerScore2);
-                            Send(enemy.Name + ",-1,-1");
-                            Send(shot.Name + ",-1,-1");
+                            Send("score," + playerScore1 + "," + playerScore2);   
                         }
                         else
                         {
@@ -342,7 +370,7 @@ namespace CoopSurvivalGame
                         break;
                     }
                 }
-            }
+            }          
 
             foreach (Rectangle item in itemsToRemove)
             {
@@ -352,6 +380,7 @@ namespace CoopSurvivalGame
                 }
                 shotsActive.Remove(item);
                 enemyActive.Remove(item);
+                bonusActive.Remove(item);
                 canvas.Children.Remove(item);
             }
             
@@ -389,9 +418,12 @@ namespace CoopSurvivalGame
             Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
 
             stopwatchEnemy.Stop();
-            if (stopwatchEnemy.ElapsedMilliseconds > 3000 && enemyActive.Count <= 4)
+            if (stopwatchEnemy.ElapsedMilliseconds > 3000) 
             {
-                CreateEnemy();
+                if (enemyActive.Count <= 2)
+                {
+                    CreateEnemy();
+                }
                 stopwatchEnemy.Restart();
             }
             else
@@ -400,9 +432,12 @@ namespace CoopSurvivalGame
             }
 
             stopwatchBonus.Stop();
-            if (stopwatchBonus.ElapsedMilliseconds > 5000 && bonusActive.Count <= 1)
+            if (stopwatchBonus.ElapsedMilliseconds > 5000)
             {
-                CreateBonus();
+                if (bonusActive.Count <= 0)
+                {
+                    CreateBonus();                  
+                }
                 stopwatchBonus.Restart();
             }
             else

@@ -77,19 +77,12 @@ namespace CoopSurvivalGame
                 _socketForReceive.BeginReceiveFrom(so.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv, so);
                 string rec = Encoding.ASCII.GetString(so.buffer, 0, bytes);
 
-
-                
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        Thread t = new Thread(() => this.ChangePosition(rec));
-                        t.Start();
-                    //ChangePosition(rec);
-
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    Thread t = new Thread(() => this.ChangePosition(rec));
+                    t.Start();
+                        //ChangePosition(rec);
                 }));
-                
-                
-
-   
             }, state);
         }
 
@@ -146,6 +139,7 @@ namespace CoopSurvivalGame
                 shotsActive.Remove(item);
                 canvas.Children.Remove(item);
             }
+            itemsToRemove = new List<Rectangle>();
 
             if (keyA)
             {
@@ -170,7 +164,6 @@ namespace CoopSurvivalGame
         {
             try
             {
-
                 string elementType = position.Split(',')[0];
                 int positionFromTop = Convert.ToInt32(position.Split(',')[1]);
                 int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
@@ -253,15 +246,18 @@ namespace CoopSurvivalGame
                         {
                             try
                             {
-                                Rectangle enemy = new Rectangle();
-                                enemy.Name = elementType;
-                                enemy.Width = 30;
-                                enemy.Height = 30;
-                                enemy.Tag = "enemy";
-                                enemy.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/enemy.png")));
-                                Canvas.SetTop(enemy, positionFromTop);
-                                Canvas.SetLeft(enemy, positionFromLeft);
-                                canvas.Children.Add(enemy);
+                                if (positionFromTop >= 0 && positionFromLeft >= 0)
+                                {
+                                    Rectangle enemy = new Rectangle();
+                                    enemy.Name = elementType;
+                                    enemy.Width = 30;
+                                    enemy.Height = 30;
+                                    enemy.Tag = "enemy";
+                                    enemy.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/enemy.png")));
+                                    Canvas.SetTop(enemy, positionFromTop);
+                                    Canvas.SetLeft(enemy, positionFromLeft);
+                                    canvas.Children.Add(enemy);
+                                }
                             }
                             catch (Exception) { }
                         }));
@@ -305,8 +301,8 @@ namespace CoopSurvivalGame
                 }
                 else if (elementType.Contains("dir"))
                 {
-                    lock (canvas)
-                    {
+                   lock (canvas)
+                   {
                         lock (player1)
                         {
                             Dispatcher.Invoke(new Action(() =>
@@ -329,7 +325,7 @@ namespace CoopSurvivalGame
                                 }
                             }));
                         }
-                    }
+                   }
                 }
             }
             catch (Exception) { }
