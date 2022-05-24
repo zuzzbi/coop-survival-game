@@ -169,8 +169,8 @@ namespace CoopSurvivalGame
                 int positionFromLeft = Convert.ToInt32(position.Split(',')[2]);
                 if (elementType == "player1")
                 {
-                    lock (canvas)
-                    {
+                    //lock (canvas)
+                    //{
                         lock (player1)
                         {
                             Dispatcher.Invoke(new Action(() =>
@@ -182,12 +182,12 @@ namespace CoopSurvivalGame
                                 }
                             }));
                         }
-                    }
+                    //}
                 }
                 else if (elementType == "player2")
                 {
-                    lock (canvas)
-                    {
+                    //lock (canvas)
+                    //{
                         lock (player2)
                         {
                             Dispatcher.Invoke(new Action(() =>
@@ -199,7 +199,7 @@ namespace CoopSurvivalGame
                                 }
                             }));
                         }
-                    }
+                   // }
                 }
                 else if (positionFromLeft == -1 && positionFromTop == -1)
                 {
@@ -301,8 +301,8 @@ namespace CoopSurvivalGame
                 }
                 else if (elementType.Contains("dir"))
                 {
-                   lock (canvas)
-                   {
+                   //lock (canvas)
+                   //{
                         lock (player1)
                         {
                             Dispatcher.Invoke(new Action(() =>
@@ -325,7 +325,7 @@ namespace CoopSurvivalGame
                                 }
                             }));
                         }
-                   }
+                   //}
                 }
             }
             catch (Exception) { }

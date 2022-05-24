@@ -137,8 +137,8 @@ namespace CoopSurvivalGame
             }
             else if (elementType == "player2")
             {
-                lock (canvas)
-                {
+                //lock (canvas)
+                //{
                     lock (player2)
                     {
                         Dispatcher.Invoke(new Action(() =>
@@ -155,7 +155,7 @@ namespace CoopSurvivalGame
                             }
                         }));
                     }
-                }
+                //}
             }
             else if (elementType == "shotUp")
             {
@@ -175,8 +175,8 @@ namespace CoopSurvivalGame
             }
             else if (elementType.Contains("dir"))
             {
-                lock (canvas)
-                {
+                //lock (canvas)
+                //{
                     lock (player2)
                     {
                         Dispatcher.Invoke(new Action(() =>
@@ -199,7 +199,7 @@ namespace CoopSurvivalGame
                             }
                         }));
                     }
-                }
+                //}
             }
         }
 
