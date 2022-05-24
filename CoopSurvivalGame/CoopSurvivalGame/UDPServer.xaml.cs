@@ -143,12 +143,15 @@ namespace CoopSurvivalGame
                     {
                         Dispatcher.Invoke(new Action(() =>
                         {
+
                             if (positionFromTop > 0 && positionFromTop < canvas.ActualHeight - player1.Height && positionFromLeft > 0 && positionFromLeft < canvas.ActualWidth - player1.Width)
                             {
                                 Canvas.SetLeft(player2, positionFromLeft);
                                 Canvas.SetTop(player2, positionFromTop);
-
-                                Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
+                                }));
                             }
                         }));
                     }
@@ -235,7 +238,10 @@ namespace CoopSurvivalGame
                     }
                     canvas.Children.Add(shot);
                     shotsActive.Add(shot);
-                    Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Send(shot.Name + "," + Canvas.GetTop(shot).ToString() + "," + Canvas.GetLeft(shot).ToString());
+                    }));
                 }));
             }
         }
@@ -254,7 +260,10 @@ namespace CoopSurvivalGame
             Canvas.SetLeft(enemy, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(enemy.Width)));
             canvas.Children.Add(enemy);
             enemyActive.Add(enemy);
-            Send(enemy.Name + "," + Canvas.GetTop(enemy).ToString() + "," + Canvas.GetLeft(enemy).ToString());
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Send(enemy.Name + "," + Canvas.GetTop(enemy).ToString() + "," + Canvas.GetLeft(enemy).ToString());
+            }));
         }
 
         private void CreateBonus() 
@@ -270,7 +279,10 @@ namespace CoopSurvivalGame
             Canvas.SetLeft(bonus, random.Next(0, Convert.ToInt32(canvas.ActualWidth) - Convert.ToInt32(bonus.Width)));
             canvas.Children.Add(bonus);
             bonusActive.Add(bonus);
-            Send(bonus.Name + "," + Canvas.GetTop(bonus).ToString() + "," + Canvas.GetLeft(bonus).ToString());
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Send(bonus.Name + "," + Canvas.GetTop(bonus).ToString() + "," + Canvas.GetLeft(bonus).ToString());
+            }));
         }
 
         private void GameLoop(object sender, EventArgs e)
@@ -317,13 +329,19 @@ namespace CoopSurvivalGame
                 {
                     bonusShots1 = 3;
                     itemsToRemove.Add(bonus);
-                    Send(bonus.Name + ",-1,-1");
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Send(bonus.Name + ",-1,-1");
+                    }));
                 }
                 else if (Overlap(player2, bonus))
                 {
                     bonusShots2 = 3;
                     itemsToRemove.Add(bonus);
-                    Send(bonus.Name + ",-1,-1");
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Send(bonus.Name + ",-1,-1");
+                    }));
                 }
             }
 
@@ -334,7 +352,10 @@ namespace CoopSurvivalGame
                     if (Overlap(enemy, shot))
                     {
                         itemsToRemove.Add(shot);
-                        Send(shot.Name + ",-1,-1");
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            Send(shot.Name + ",-1,-1");
+                        }));
                         int lifeLeft = Convert.ToInt32(enemy.Tag) - 1;
                         if (shot.Name.Contains("shots") && bonusShots1 > 0)
                         {
@@ -350,22 +371,40 @@ namespace CoopSurvivalGame
                         if (lifeLeft <= 0)
                         {
                             itemsToRemove.Add(enemy);
-                            Send(enemy.Name + ",-1,-1");
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                Send(enemy.Name + ",-1,-1");
+                            }));
                             if (shot.Name.Contains("shotc"))
                             {
                                 playerScore2++;
                                 Score2.Text = Convert.ToString(playerScore2);
-                                Send("score," + playerScore1 + "," + playerScore2);
-                                Send(enemy.Name + ",-1,-1");
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Send("score," + playerScore1 + "," + playerScore2);
+                                }));
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Send(enemy.Name + ",-1,-1");
+                                }));
                             }
                             else
                             {
                                 playerScore1++;
                                 Score1.Text = Convert.ToString(playerScore1);
-                                Send("score," + playerScore1 + "," + playerScore2);
-                                Send(enemy.Name + ",-1,-1");
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Send("score," + playerScore1 + "," + playerScore2);
+                                }));
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    Send(enemy.Name + ",-1,-1");
+                                }));
                             }
-                            Send("score," + playerScore1 + "," + playerScore2);   
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                Send("score," + playerScore1 + "," + playerScore2);
+                            }));
                         }
                         else
                         {
@@ -380,7 +419,10 @@ namespace CoopSurvivalGame
             {
                 if (item.Name.Contains("enemy"))
                 {
-                    Send(item.Name + ",-1,-1");
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Send(item.Name + ",-1,-1");
+                    }));
                 }
                 shotsActive.Remove(item);
                 enemyActive.Remove(item);
@@ -419,7 +461,10 @@ namespace CoopSurvivalGame
                 }
             }
 
-            Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Send("player1," + Canvas.GetTop(player1).ToString() + "," + Canvas.GetLeft(player1).ToString());
+            }));
 
             stopwatchEnemy.Stop();
             if (stopwatchEnemy.ElapsedMilliseconds > 3000) 
@@ -472,7 +517,10 @@ namespace CoopSurvivalGame
                     if (!e.IsRepeat)
                     {
                         player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_left.png")));
-                        Send("dir" + e.Key.ToString() +",0,0");
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            Send("dir" + e.Key.ToString() + ",0,0");
+                        }));
                     }
                     break;
                 case Key.W:
@@ -480,7 +528,10 @@ namespace CoopSurvivalGame
                     if (!e.IsRepeat) 
                     { 
                         player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_up.png")));
-                        Send("dir" + e.Key.ToString() + ",0,0");
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            Send("dir" + e.Key.ToString() + ",0,0");
+                        }));
                     }
                     break;
                 case Key.S:
@@ -488,7 +539,10 @@ namespace CoopSurvivalGame
                     if (!e.IsRepeat)
                     { 
                         player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_down.png")));
-                        Send("dir" + e.Key.ToString() + ",0,0");
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            Send("dir" + e.Key.ToString() + ",0,0");
+                        }));
                     }
                     break;
                 case Key.D:
@@ -496,7 +550,10 @@ namespace CoopSurvivalGame
                     if (!e.IsRepeat)
                     {
                         player1.Fill = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/sprites/p1_right.png")));
-                        Send("dir" + e.Key.ToString() + ",0,0");
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            Send("dir" + e.Key.ToString() + ",0,0");
+                        }));
                     }
                     break;
                 case Key.Up:
