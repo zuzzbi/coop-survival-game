@@ -30,12 +30,12 @@ namespace CoopSurvivalGame
             InitializeComponent();
             Score1.Text = Convert.ToString(playerScore1);
             Score2.Text = Convert.ToString(playerScore2);
-            stopwatchShot.Start();
-            stopwatchEnemy.Start();
-            stopwatchBonus.Start();
+            //stopwatchShot.Start();
+            //stopwatchEnemy.Start();
+            //stopwatchBonus.Start();
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
-            gameTimer.Start();
+            //gameTimer.Start();
             canvas.Focus();
         }
 
@@ -122,11 +122,15 @@ namespace CoopSurvivalGame
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        foreach (Rectangle item in enemyActive)
-                        {
-                            Send(item.Name + "," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
-                            Send("score," + playerScore1 + ',' + playerScore2);
-                        }
+                        gameTimer.Start();
+                        stopwatchShot.Start();
+                        stopwatchEnemy.Start();
+                        stopwatchBonus.Start();
+                        //foreach (Rectangle item in enemyActive)
+                        //{
+                        //    Send(item.Name + "," + Canvas.GetTop(item).ToString() + "," + Canvas.GetLeft(item).ToString());
+                        //    Send("score," + playerScore1 + ',' + playerScore2);
+                        //}
                     }));
 
                 }
