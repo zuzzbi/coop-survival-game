@@ -143,19 +143,31 @@ namespace CoopSurvivalGame
 
             if (keyA)
             {
-                Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
+                if (Canvas.GetLeft(player2) - 5 > 0 && Canvas.GetLeft(player2) - 5 < canvas.ActualWidth - player2.Height)
+                {
+                    Canvas.SetLeft(player2, Canvas.GetLeft(player2) - 5);
+                }
             }
             if (keyW)
             {
-                Canvas.SetTop(player2, Canvas.GetTop(player2) - 5);
+                if (Canvas.GetTop(player2) - 5 > 0 && Canvas.GetTop(player2) - 5 < canvas.ActualHeight - player2.Height)
+                {
+                    Canvas.SetTop(player2, Canvas.GetTop(player2) - 5);
+                }
             }
             if (keyS)
             {
-                Canvas.SetTop(player2, Canvas.GetTop(player2) + 5);
+                if (Canvas.GetTop(player2) + 5 > 0 && Canvas.GetTop(player2) + 5 < canvas.ActualHeight - player2.Height)
+                {
+                    Canvas.SetTop(player2, Canvas.GetTop(player2) + 5);
+                }
             }
             if (keyD)
             {
-                Canvas.SetLeft(player2, Canvas.GetLeft(player2) + 5);
+                if (Canvas.GetLeft(player2) + 5 > 0 && Canvas.GetLeft(player2) + 5 < canvas.ActualWidth - player2.Height)
+                {
+                    Canvas.SetLeft(player2, Canvas.GetLeft(player2) + 5);
+                }
             }
             Send("player2," + Canvas.GetTop(player2).ToString() + "," + Canvas.GetLeft(player2).ToString());
         }
